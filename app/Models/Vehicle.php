@@ -16,7 +16,9 @@ class Vehicle extends Model
         'mileage',
         'first_registration',
         'license_plate',
-        'vin'
+        'vin',
+        'created_at',
+        'description',
     ];
 
     // Relationship to Client

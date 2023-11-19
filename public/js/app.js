@@ -1,4 +1,3 @@
-import './bootstrap';
 function highlightCurrentPage() {
 
     var currentPage = window.location.pathname;
@@ -15,9 +14,15 @@ document.addEventListener('DOMContentLoaded', highlightCurrentPage);
 
 $(document).ready(function() {
     $('.client-select').select2({
-        placeholder: "Select a Client",
+        placeholder: "Pasirinkite klientą",
         allowClear: true
     });
 });
 
+$(document).ready(function() {
+    $('.vehicle-select').select2({
+        placeholder: "Pasirinkite automobilį",
+        allowClear: true,
+    });
+});
 

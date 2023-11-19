@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Client;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Database\Seeder;
@@ -19,12 +20,8 @@ class DatabaseSeeder extends Seeder
         Client::factory()->count(50)->create();
         Vehicle::factory()->count(100)->create();
         Order::factory()->count(70)->create();
-
-        $user = User::factory()->create([
-            'name' => 'adminas',
-            'email' => 'admin@gmail.com',
-            'password' => 'admin'
-        ]);
+       User::factory()->specificUser()->create();
+        OrderItem::factory()->count(100)->create();
 
         Order::factory(6)->create([
             'user_id' => $user->id

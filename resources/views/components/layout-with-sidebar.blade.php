@@ -1,28 +1,13 @@
-<!DOCTYPE html>
-<html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>UAB "Automistro" servizas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="{{ asset('css/tailwind.output.css') }}"/>
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-    <script src="{{ asset('js/init-alpine.js') }}"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" defer></script>
-    <script src="{{ asset('js/charts-lines.js') }}" defer></script>
-    <script src="{{ asset('js/charts-pie.js') }}" defer></script>
-</head>
-<body>
 <div
-    class="flex h-screen bg-gray-50 dark:bg-gray-900"
+    class="flex h-screen bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 shadow-inner"
     :class="{ 'overflow-hidden': isSideMenuOpen }"
 >
     <!-- Desktop sidebar -->
     <aside
-        class="z-20 hidden w-64 bg-white dark:bg-gray-800 md:block flex-shrink-0"
+        class=" hidden w-64 bg-white dark:bg-gray-800 md:block flex-shrink-0"
+        style="border-right: 2px solid #D1D5DB;"
     >
-        <div class="py-4 text-gray-500 dark:text-gray-400">
+        <div class="py-4 text-gray-500 dark:text-gray-400 ">
             <a
                 class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200"
                 href="#"
@@ -31,12 +16,8 @@
             </a>
             <ul class="mt-6">
                 <li class="relative px-6 py-3">
-              <span
-                  class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg"
-                  aria-hidden="true"
-              ></span>
                     <a
-                        class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
+                        class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
                         href="/"
                     >
                         <svg
@@ -123,6 +104,27 @@
                             ></path>
                         </svg>
                         <span class="ml-4">Klientai</span>
+                    </a>
+                </li>
+                <li class="relative px-6 py-3">
+                    <a
+                        class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                        href="/vin-decoder"
+                    >
+                        <svg
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                            fill="none"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path d="M135.2 117.4L109.1 192H402.9l-26.1-74.6C372.3 104.6 360.2 96 346.6 96H165.4c-13.6 0-25.7 8.6-30.2 21.4zM39.6 196.8L74.8 96.3C88.3 57.8 124.6 32 165.4 32H346.6c40.8 0 77.1 25.8 90.6 64.3l35.2 100.5c23.2 9.6 39.6 32.5 39.6 59.2V400v48c0 17.7-14.3 32-32 32H448c-17.7 0-32-14.3-32-32V400H96v48c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V400 256c0-26.7 16.4-49.6 39.6-59.2zM128 288a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm288 32a32 32 0 1 0 0-64 32 32 0 1 0 0 64z">
+                            </path>
+                        </svg>
+                        <span class="ml-4">VIN nuskaitymas</span>
                     </a>
                 </li>
                 <li class="relative px-6 py-3">
@@ -279,6 +281,28 @@
                 <li class="relative px-6 py-3">
                     <a
                         class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                        href="/clients"
+                    >
+                        <svg
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                            fill="none"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path d="M135.2 117.4L109.1 192H402.9l-26.1-74.6C372.3 104.6 360.2 96 346.6 96H165.4c-13.6 0-25.7 8.6-30.2 21.4zM39.6 196.8L74.8 96.3C88.3 57.8 124.6 32 165.4 32H346.6c40.8 0 77.1 25.8 90.6 64.3l35.2 100.5c23.2 9.6 39.6 32.5 39.6 59.2V400v48c0 17.7-14.3 32-32 32H448c-17.7 0-32-14.3-32-32V400H96v48c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32V400 256c0-26.7 16.4-49.6 39.6-59.2zM128 288a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm288 32a32 32 0 1 0 0-64 32 32 0 1 0 0 64z">
+                            </path>
+
+                        </svg>
+                        <span class="ml-4">VIN nuskaitymas</span>
+                    </a>
+                </li>
+                <li class="relative px-6 py-3">
+                    <a
+                        class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
                         href="/vehicles"
                     >
                         <svg
@@ -300,10 +324,5 @@
             </ul>
         </div>
     </aside>
-    <div class="flex flex-col flex-1 w-full">
-        {{$slot}}
-    </div>
 </div>
-</body>
-</html>
-
+@endsection

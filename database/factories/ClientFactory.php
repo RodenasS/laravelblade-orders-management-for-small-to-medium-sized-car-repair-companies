@@ -17,9 +17,9 @@ class ClientFactory extends Factory
         return [
             'name' => $this->faker->firstName,
             'surname' => $this->faker->lastName,
-            'email' => $this->faker->safeEmail,
+            'email' => $this->faker->unique()->safeEmail,
             'phone' => $this->faker->phoneNumber,
-            'description' => $this->faker->paragraph,
+            'description' => $this->faker->text(200) // Ensure the length does not exceed the database field size
         ];
 
     }

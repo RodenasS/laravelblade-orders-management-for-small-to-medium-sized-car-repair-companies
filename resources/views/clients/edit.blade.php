@@ -1,5 +1,5 @@
-<x-layout-with-sidebar>
-    <x-header>
+@extends('components/layout')
+@section('content')
         <body class="h-full ">
         <div class="container px-6 mx-auto">
             <h4
@@ -82,5 +82,4 @@
             </form>
         </div>
         </body>
-    </x-header>
-</x-layout-with-sidebar>
+@endsection

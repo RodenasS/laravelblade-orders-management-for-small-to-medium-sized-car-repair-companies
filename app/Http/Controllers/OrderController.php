@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\User;
+use App\Models\Vehicle;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -11,8 +16,14 @@ class OrderController extends Controller
 // Show all orders
     public function index()
     {
-        $orders = Order::with(['client', 'vehicle'])->latest()->paginate(6);
-        return view('orders.index', compact('orders'));
+        $orders = Order::latest()->paginate(12);
+
+        return view('orders.index', compact('orders'), [
+            'totalOrders' => $this->getTotalOrdersCount(),
+            'ordersLast24Hours' => $this->getLast24HoursCount(),
+            'ordersLast7Days' => $this->getLast7DaysCount(),
+            'ordersLast31Days' => $this->getLast31DaysCount(),
+        ]) ;
     }
 
     // Display a single order
@@ -34,36 +45,69 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $formFields = $request->validate([
-            'order_number' => 'required|unique:orders,order_number',
-            'date' => 'required|date',
-            'status' => 'required|string',
-            'estimated_start' => 'nullable|date',
-            'estimated_end' => 'nullable|date|after_or_equal:estimated_start',
             'client_id' => 'nullable|exists:clients,id',
             'vehicle_id' => 'nullable|exists:vehicles,id',
+            'vehicle_mileage' => 'required|integer',
+            'status' => 'required|string', // Include status field
+            'estimated_start' => 'date',
+            'estimated_end' => 'date',
             'items' => 'required|array',
-            'items.*.line_number' => 'required|numeric',
             'items.*.product_code' => 'required',
             'items.*.product_name' => 'required',
             'items.*.quantity' => 'required|numeric',
             'items.*.unit' => 'required',
-            'items.*.price_ex_vat' => 'required|numeric',
-            'items.*.total_ex_vat' => 'required|numeric',
-            'items.*.total_inc_vat' => 'required|numeric',
-            'total_ex_vat' => 'required|numeric',
-            'vat' => 'required|numeric',
-            'total_inc_vat' => 'required|numeric',
+            'items.*.unit_price' => 'required|numeric',
+            'images' => 'nullable|array|max:5',
+            'images.*' => 'image',
+            'description' => 'string',
         ]);
 
-        $order = Order::create($formFields);
-        $order->items()->createMany($request->items);
+        // Additional fields for the order
+        $formFields['date'] = now(); // Set the current date
 
-        return redirect('/orders')->with('message', 'Order created successfully!');
+        // Calculate totals
+        $totalExVat = 0;
+        $vatRate = 0.21; // VAT rate
+        $formFields['items'] = $formFields['items'] ?? [];
+
+        if (is_array($formFields['items']) && count($formFields['items']) > 0) {
+            foreach ($formFields['items'] as &$item) {
+                $item['total_ex_vat'] = $item['unit_price'] * $item['quantity'];
+                $item['total_inc_vat'] = $item['total_ex_vat'] * (1 + $vatRate);
+                $totalExVat += $item['total_ex_vat'];
+            }
+
+            $formFields['total_ex_vat'] = $totalExVat;
+            $formFields['vat'] = $totalExVat * $vatRate;
+            $formFields['total_inc_vat'] = $totalExVat * (1 + $vatRate);
+
+            // Create the order
+            $formFields['user_id'] = auth()->id();
+            $order = Order::create($formFields);
+
+            // Create order items
+            foreach ($formFields['items'] as $itemData) {
+                $order->items()->create($itemData);
+            }
+
+            if ($request->has('images')) {
+                foreach ($request->file('images') as $image) {
+                    $imagePath = $image->store('images', 'public');
+                    $order->images()->create(['path' => $imagePath]);
+                }
+            }
+
+            return redirect('/orders')->with('message', 'Order created successfully!');
+        }
     }
 
     // Show form to edit an order
     public function edit(Order $order)
     {
+        if (auth()->id() !== $order->user_id && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $order->load(['client', 'vehicle', 'items']);
         $clients = Client::all();
         $vehicles = Vehicle::all();
@@ -73,33 +117,54 @@ class OrderController extends Controller
     // Update the order
     public function update(Request $request, Order $order)
     {
-        if ($order->user_id != auth()->id()) {
-            abort(403, 'Unauthorized Action');
-        }
-
         $formFields = $request->validate([
-            'order_number' => 'required|unique:orders,order_number',
-            'date' => 'required|date',
-            'status' => 'required|string',
-            'estimated_start' => 'nullable|date',
-            'estimated_end' => 'nullable|date|after_or_equal:estimated_start',
             'client_id' => 'nullable|exists:clients,id',
             'vehicle_id' => 'nullable|exists:vehicles,id',
+            'vehicle_mileage' => 'required|integer',
+            'status' => 'required|string',
+            'estimated_start' => 'date',
+            'estimated_end' => 'date',
             'items' => 'required|array',
-            'items.*.line_number' => 'required|numeric',
             'items.*.product_code' => 'required',
             'items.*.product_name' => 'required',
             'items.*.quantity' => 'required|numeric',
             'items.*.unit' => 'required',
-            'items.*.price_ex_vat' => 'required|numeric',
-            'items.*.total_ex_vat' => 'required|numeric',
-            'items.*.total_inc_vat' => 'required|numeric',
-            'total_ex_vat' => 'required|numeric',
-            'vat' => 'required|numeric',
-            'total_inc_vat' => 'required|numeric',
+            'items.*.unit_price' => 'required|numeric',
+            'images' => 'nullable|array|max:5',
+            'images.*' => 'image',
+            'description' => 'string',
         ]);
 
+        // Calculate totals
+        $totalExVat = 0;
+        $vatRate = 0.21; // VAT rate
+        foreach ($formFields['items'] as &$item) {
+            $item['total_ex_vat'] = $item['unit_price'] * $item['quantity'];
+            $item['total_inc_vat'] = $item['total_ex_vat'] * (1 + $vatRate);
+            $totalExVat += $item['total_ex_vat'];
+        }
+
+        $formFields['total_ex_vat'] = $totalExVat;
+        $formFields['vat'] = $totalExVat * $vatRate;
+        $formFields['total_inc_vat'] = $totalExVat * (1 + $vatRate);
+
+        // Update the order
         $order->update($formFields);
+
+        // Update order items
+        $order->items()->delete(); // Remove existing items
+        foreach ($formFields['items'] as $itemData) {
+            $order->items()->create($itemData);
+        }
+
+        // Handle images
+        if ($request->has('images')) {
+            $order->images()->delete(); // Remove existing images
+            foreach ($request->file('images') as $image) {
+                $imagePath = $image->store('images', 'public');
+                $order->images()->create(['path' => $imagePath]);
+            }
+        }
 
         return back()->with('message', 'Order updated successfully!');
     }
@@ -107,11 +172,49 @@ class OrderController extends Controller
     // Delete an order
     public function destroy(Order $order)
     {
-        if ($order->user_id != auth()->id()) {
-            abort(403, 'Unauthorized Action');
+
+        if (auth()->id() !== $order->user_id && !auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
         }
 
         $order->delete();
         return redirect('/orders')->with('message', 'Order deleted successfully!');
     }
+
+    public function getTotalOrdersCount()
+    {
+        return Order::count();
+    }
+
+    // Function to get the count of vehicles added in the last 24 hours
+    public function getLast24HoursCount()
+    {
+        $date = Carbon::now()->subDay();
+        return Order::where('created_at', '>=', $date)->count();
+    }
+
+    // Function to get the count of vehicles added in the last 7 days
+    public function getLast7DaysCount()
+    {
+        $date = Carbon::now()->subDays(7);
+        return Order::where('created_at', '>=', $date)->count();
+    }
+
+    // Function to get the count of vehicles added in the last 31 days
+    public function getLast31DaysCount()
+    {
+        $date = Carbon::now()->subDays(31);
+        return Order::where('created_at', '>=', $date)->count();
+    }
+
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
+

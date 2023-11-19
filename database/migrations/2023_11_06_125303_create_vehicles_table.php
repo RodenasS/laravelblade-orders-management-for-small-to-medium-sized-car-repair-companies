@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('first_registration');
             $table->string('license_plate')->unique();
             $table->string('vin')->unique();
+            $table->longText('description')->nullable();
             $table->timestamps();
         });
     }

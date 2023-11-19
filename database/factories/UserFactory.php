@@ -25,7 +25,14 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
         ];
     }
-
+    public function specificUser(): static
+    {
+        return $this->state(fn(array $attributes) => [
+            'name' => 'TEST',
+            'email' => 'test@gmail.com',
+            'password' => bcrypt('testas'), // Encrypt the password
+        ]);
+    }
     /**
      * Indicate that the model's email address should be unverified.
      */

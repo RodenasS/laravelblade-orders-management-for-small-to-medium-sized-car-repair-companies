@@ -10,18 +10,29 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
-        'order_number',
         'date',
         'status',
         'estimated_start',
         'estimated_end',
         'client_id',
         'vehicle_id',
-        'special_conditions',
+        'user_id',
+        'vehicle_mileage',
         'total_ex_vat',
         'vat',
         'total_inc_vat',
+        'description',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($order) {
+            $order->order_number = 'U' . str_pad($order->id, 6, '0', STR_PAD_LEFT);
+            $order->save(); // Save the order again with the order_number
+        });
+    }
 
     public function scopeFilter($query, array $filters)
     {
@@ -33,8 +44,23 @@ class Order extends Model
         }
     }
 
-    // Relationship To User
-    public function user() {
-        return $this->belongsTo(User::class, 'user_id');
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
     }
+
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class);
+    }
+
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+    public function images()
+    {
+        return $this->hasMany(OrderImage::class);
+    }
+
 }

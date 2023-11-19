@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\VinDecoderController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +30,9 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/calendar-data', [DashboardController::class, 'calendarData'])->name('calendar.data');
+
+Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
 
 //Show Register/Create Form
 Route::get('/register', [UserController::class, 'create'])->middleware('guest');
@@ -73,3 +78,6 @@ Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.sh
 Route::get('/orders/{order}/edit', [OrderController::class, 'edit'])->name('orders.edit');
 Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
 Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+
+Route::get('/vin-decoder', [VinDecoderController::class, 'show']);
+Route::get('/decode/{vin}', [VinDecoderController::class, 'decode']);

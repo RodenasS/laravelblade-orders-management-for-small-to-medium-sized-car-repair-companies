@@ -11,17 +11,19 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('order_number')->unique();
-            $table->string('status')->default('priimtas');
+            $table->string('order_number')->nullable()->unique();
+            $table->string('status')->default('vykdomas');
             $table->dateTime('estimated_start')->nullable();
             $table->dateTime('estimated_end')->nullable();
             $table->date('date');
             $table->foreignId('client_id')->constrained()->onDelete('cascade');
             $table->foreignId('vehicle_id')->constrained()->onDelete('cascade');
-            $table->text('special_conditions')->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Add user_id column
+            $table->integer('vehicle_mileage')->nullable();
             $table->decimal('total_ex_vat', 10, 2);
             $table->decimal('vat', 10, 2);
             $table->decimal('total_inc_vat', 10, 2);
+            $table->longText('description')->nullable();
             $table->timestamps();
         });
     }

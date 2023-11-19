@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -10,16 +11,18 @@ class ClientController extends Controller
     public function index()
     {
         return view('clients.index', [
-            'clients' => Client::latest()->filter(request(['tag', 'search']))->paginate(10)
+            'clients' => Client::latest()->filter(request(['tag', 'search']))->paginate(12),
+            'totalClients' => $this->getTotalVehiclesCount(),
+            'clientsLast24Hours' => $this->getLast24HoursCount(),
+            'clientsLast7Days' => $this->getLast7DaysCount(),
+            'clientsLast31Days' => $this->getLast31DaysCount()
         ]);
 
     }
 
     public function show(Client $client)
     {
-        return view('clients.show', [
-            'client' => $client
-        ]);
+        return view('clients.show', ['client' => $client]);
 
     }
 
@@ -37,7 +40,7 @@ class ClientController extends Controller
 
         Client::create($formFields);
 
-        return redirect('/')->with('message', 'Client created successfully!');
+        return redirect('/clients')->with('message', 'Client created successfully!');
     }
 
     // Create Client Data
@@ -68,7 +71,7 @@ class ClientController extends Controller
 
         $client->update($formFields);
 
-        return back()->with('message', 'Client updated successfully!');
+        return redirect('/clients')->with('message', 'Client updated successfully!');
     }
 
     // Delete Client
@@ -76,5 +79,30 @@ class ClientController extends Controller
     {
         $client->delete();
         return redirect('/clients')->with('message','Client deleted successfully!');
+    }
+    public function getTotalVehiclesCount()
+    {
+        return Client::count();
+    }
+
+    // Function to get the count of vehicles added in the last 24 hours
+    public function getLast24HoursCount()
+    {
+        $date = Carbon::now()->subDay();
+        return Client::where('created_at', '>=', $date)->count();
+    }
+
+    // Function to get the count of vehicles added in the last 7 days
+    public function getLast7DaysCount()
+    {
+        $date = Carbon::now()->subDays(7);
+        return Client::where('created_at', '>=', $date)->count();
+    }
+
+    // Function to get the count of vehicles added in the last 31 days
+    public function getLast31DaysCount()
+    {
+        $date = Carbon::now()->subDays(31);
+        return Client::where('created_at', '>=', $date)->count();
     }
 }

@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -13,26 +14,30 @@ class OrderFactory extends Factory
     protected $model = Order::class;
 
     public function definition() {
-        // Generate a random start date
-        $estimated_start = $this->faker->dateTimeBetween('-1 month', '+1 month');
+        $year = now()->year; // Current year
+        // Generate a random start date within this year
+        $estimated_start = $this->faker->dateTimeBetween("$year-01-01", "$year-12-31");
 
-        // Generate an end date that's after the start date
-        $estimated_end = $this->faker->dateTimeBetween($estimated_start, '+1 month');
+        // Generate an end date that's within 2 days after the start date
+        $estimated_end = $this->faker->dateTimeBetween($estimated_start, $estimated_start->format('Y-m-d') . ' +2 days');
 
+        $user = User::factory()->create();
         return [
-            'order_number' => $this->faker->unique()->numerify('Order###'),
+            'order_number' => 'U' . time() . $this->faker->unique()->randomNumber(3), // Using time() to ensure uniqueness
             'date' => $this->faker->date(),
-            'client_id' => \App\Models\Client::factory(),
-            'vehicle_id' => \App\Models\Vehicle::factory(),
-            'special_conditions' => $this->faker->sentence,
-            'status' => $this->faker->randomElement(['Priimtas', 'Vykdomas', 'Baigtas']),
+            'status' => $this->faker->randomElement(['vykdomas', 'įvykdytas', 'atšauktas']),
             'estimated_start' => $estimated_start,
             'estimated_end' => $estimated_end,
-            'total_ex_vat' => $this->faker->randomFloat(2, 100, 1000),
-            'vat' => $this->faker->randomFloat(2, 20, 200),
+            'client_id' => \App\Models\Client::factory(),
+            'vehicle_id' => \App\Models\Vehicle::factory(),
+            'user_id' => $user->id, // Use the created user's ID
+            'vehicle_mileage' => $this->faker->numberBetween(1000, 200000),
+            'total_ex_vat' => $this->faker->randomFloat(2, 100, 10000),
+            'vat' => $this->faker->randomFloat(2, 5, 25),
             'total_inc_vat' => function (array $attributes) {
-    return $attributes['total_ex_vat'] + $attributes['vat'];
-},
+                return $attributes['total_ex_vat'] + ($attributes['total_ex_vat'] * ($attributes['vat'] / 100));
+            },
+            'description' => $this->faker->text(200),
         ];
     }
 }
