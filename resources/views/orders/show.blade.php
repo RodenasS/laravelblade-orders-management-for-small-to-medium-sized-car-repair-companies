@@ -3,10 +3,20 @@
 
     <body class="h-full ">
     <div class="container px-6 mx-auto">
-        <h4 class="mb-2 mt-16 text-lg font-semibold text-gray-600 dark:text-gray-300">
-            Automobilio {{$order->vehicle->license_plate}} informacija
-        </h4>
 
+        <div class="flex justify-between">
+            <h4 class="mb-2 mt-16 text-lg font-semibold text-gray-600 dark:text-gray-300">
+                Automobilio {{$order->vehicle->license_plate}} informacija
+            </h4>
+            <form action="{{ route('generatePDF', $order->id) }}" method="POST">
+                @csrf
+                <button type="submit"
+                        class="px-5 mt-16 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
+                        role="button">
+                    Generuoti PVM sąskaitą
+                </button>
+            </form>
+        </div>
         <div class="px-4 py-3 mb-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
             <div class="mb-4">
                 <span class="text-gray-700 dark:text-gray-400">Markė, modelis: </span> <br>
@@ -22,7 +32,8 @@
             <div class="mb-4">
                 <span class="text-gray-700 dark:text-gray-400">VIN kodas: </span>
                 <h5 class="flex font-semibold text-gray-700 dark:text-gray-400">{{ $order->vehicle->vin }}
-                    <a href="/vindecoder" class="ml-2 flex items-center justify-betweentext-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                    <a href="/vindecoder"
+                       class="ml-2 flex items-center justify-betweentext-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                        aria-label="Show">
                         Nuskaityti VIN kodą</a>
 
@@ -49,8 +60,18 @@
         </h4>
         <div class="px-4 py-3 mb-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
             <div class="mb-4">
-                <span class="text-gray-700 dark:text-gray-400">Vardas bei pavardė: </span> <br>
-                <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $order->client->name }} {{ $order->client->surname }}</h5>
+                <span class="text-gray-700 dark:text-gray-400">Vardas bei pavardė / Pavadinimas: </span> <br>
+                <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $order->client->name }}</h5>
+            </div>
+
+            <div class="mb-4">
+                <span class="text-gray-700 dark:text-gray-400">Įmonės kodas: </span>
+                <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $order->client->company_code }}</h5>
+            </div>
+
+            <div class="mb-4">
+                <span class="text-gray-700 dark:text-gray-400">Įmonės pvm kodas: </span>
+                <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $order->client->company_vat_code }}</h5>
             </div>
 
             <div class="mb-4">
@@ -63,10 +84,6 @@
                 <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $order->client->phone }}</h5>
             </div>
 
-            <div class="mb-4">
-                <span class="text-gray-700 dark:text-gray-400">Papildomi kliento įrašai: </span>
-                <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $order->client->description }}</h5>
-            </div>
         </div>
         <h4 class="mb-2 mt-4 text-lg font-semibold text-gray-600 dark:text-gray-300">
             Užsakymo detalės
@@ -95,15 +112,18 @@
             <div class="mb-4">
                 <span class="text-gray-700 dark:text-gray-400">Užsakymo būsena: </span>
                 @if (mb_strtolower(trim($order->status), 'UTF-8') == 'įvykdytas')
-                    <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">Įvykdytas</span>
+                    <span
+                        class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">Įvykdytas</span>
                 @endif
 
                 @if (strtolower($order->status) == 'vykdomas')
-                    <span class="px-2 py-1 font-semibold leading-tight text-orange-700 bg-orange-100 rounded-full dark:text-white dark:bg-orange-600">Vykdomas</span>
+                    <span
+                        class="px-2 py-1 font-semibold leading-tight text-orange-700 bg-orange-100 rounded-full dark:text-white dark:bg-orange-600">Vykdomas</span>
                 @endif
 
                 @if (strtolower($order->status) == 'atšauktas')
-                    <span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-700">Atšauktas</span>
+                    <span
+                        class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-700">Atšauktas</span>
                 @endif
             </div>
             <div class="mb-4">
@@ -128,22 +148,28 @@
                     @foreach($order->items as $index => $item)
                         <tr>
                             <td class="px-4 py-3">
-                                <span class="block w-full dark:bg-gray-800 dark:text-gray-400" data-name="items[{{ $index }}][product_code]">{{ $item->product_code }}</span>
+                                <span class="block w-full dark:bg-gray-800 dark:text-gray-400"
+                                      data-name="items[{{ $index }}][product_code]">{{ $item->product_code }}</span>
                             </td>
                             <td class="px-4 py-3">
-                                <span class="block w-full dark:bg-gray-800 dark:text-gray-400" data-name="items[{{ $index }}][product_name]">{{ $item->product_name }}</span>
+                                <span class="block w-full dark:bg-gray-800 dark:text-gray-400"
+                                      data-name="items[{{ $index }}][product_name]">{{ $item->product_name }}</span>
                             </td>
                             <td class="px-4 py-3">
-                                <span class="block w-full dark:bg-gray-800 dark:text-gray-400" data-name="items[{{ $index }}][quantity]">{{ $item->quantity }}</span>
+                                <span class="block w-full dark:bg-gray-800 dark:text-gray-400"
+                                      data-name="items[{{ $index }}][quantity]">{{ $item->quantity }}</span>
                             </td>
                             <td class="px-4 py-3">
-                                <span class="block w-full dark:bg-gray-800 dark:text-gray-400" data-name="items[{{ $index }}][unit]">{{ $item->unit }}</span>
+                                <span class="block w-full dark:bg-gray-800 dark:text-gray-400"
+                                      data-name="items[{{ $index }}][unit]">{{ $item->unit }}</span>
                             </td>
                             <td class="px-4 py-3">
-                                <span class="block w-full dark:bg-gray-800 dark:text-gray-400" data-name="items[{{ $index }}][unit_price]">{{ $item->unit_price }}</span>
+                                <span class="block w-full dark:bg-gray-800 dark:text-gray-400"
+                                      data-name="items[{{ $index }}][unit_price]">{{ $item->unit_price }}</span>
                             </td>
                             <td class="px-4 py-3">
-                                <span class="block w-full dark:bg-gray-800 dark:text-gray-400">{{ $item->unit_price*$item->quantity }} </span>
+                                <span
+                                    class="block w-full dark:bg-gray-800 dark:text-gray-400">{{ $item->unit_price*$item->quantity }} </span>
                             </td>
                         </tr>
                     @endforeach
@@ -154,20 +180,13 @@
         <h4 class="mb-2 mt-16 text-lg font-semibold text-gray-600 dark:text-gray-300">
             Prisegtos nuotraukos
         </h4>
-        <span class="block w-full dark:bg-gray-800 dark:text-gray-400">Spausti ant nuotraukos norint ją išdidinti </span>
-        <div class="flex" id="imagePreviewContainer">
-            @foreach($order->images as $image)
-                <div class="relative mr-2">
-                    <img src="{{ Storage::url($image->path) }}" class="mt-2 w-56 h-auto object-cover cursor-pointer image-item" />
-                    <button class="mt-1 px-2 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple download-btn" data-url="{{ Storage::url($image->path) }}">Atsisiųsti</button>
-                </div>
-            @endforeach
-        </div>
-
+        <span
+            class="block w-full dark:bg-gray-800 dark:text-gray-400">Spausti ant nuotraukos norint ją išdidinti </span>
     </div>
+    </body>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             // Function to toggle image size
             function toggleImageSize(img) {
                 img.classList.toggle("w-56");
@@ -178,8 +197,8 @@
 
             // Event listener for image click
             var images = document.querySelectorAll('.image-item');
-            images.forEach(function(img) {
-                img.addEventListener('click', function() {
+            images.forEach(function (img) {
+                img.addEventListener('click', function () {
                     toggleImageSize(this);
                 });
             });
@@ -196,8 +215,8 @@
 
             // Event listener for download button click
             var downloadButtons = document.querySelectorAll('.download-btn');
-            downloadButtons.forEach(function(btn) {
-                btn.addEventListener('click', function(e) {
+            downloadButtons.forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
                     e.stopPropagation(); // Prevents the image toggle when clicking the download button
                     downloadImage(this.getAttribute('data-url'));
                 });

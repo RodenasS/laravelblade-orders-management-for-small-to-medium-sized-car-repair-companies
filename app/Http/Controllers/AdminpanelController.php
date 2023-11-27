@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\CompanyInformation;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 
 class AdminpanelController extends Controller
 {
-
     public function index()
     {
-        return view('adminpanel');
+        $users = DB::table('users')->paginate(12);
+        $companies = CompanyInformation::all();
+
+        return view('adminpanel', compact('users', 'companies'));
     }
 }

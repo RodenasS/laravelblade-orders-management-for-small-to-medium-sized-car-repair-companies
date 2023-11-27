@@ -50,9 +50,20 @@
         </h4>
         <div class="px-4 py-3 mb-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
             <div class="mb-4">
-                <span class="text-gray-700 dark:text-gray-400">Vardas bei pavardė: </span> <br>
-                <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $vehicle->client->name }} {{ $vehicle->client->surname }}</h5>
+                <span class="text-gray-700 dark:text-gray-400">Vardas bei pavardė / Įmonės pavadinimas: </span> <br>
+                <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $vehicle->client->name }}</h5>
             </div>
+
+            <div class="mb-4">
+                <span class="text-gray-700 dark:text-gray-400">Įmonės kodas: </span>
+                <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $vehicle->client->company_code }}</h5>
+            </div>
+
+            <div class="mb-4">
+                <span class="text-gray-700 dark:text-gray-400">Įmonės PVM kodas: </span>
+                <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $vehicle->client->company_vat_code }}</h5>
+            </div>
+
 
             <div class="mb-4">
                 <span class="text-gray-700 dark:text-gray-400">El. paštas: </span>
@@ -64,10 +75,6 @@
                 <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $vehicle->client->phone }}</h5>
             </div>
 
-            <div class="mb-4">
-                <span class="text-gray-700 dark:text-gray-400">Papildomi kliento įrašai: </span>
-                <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $vehicle->client->description }}</h5>
-            </div>
         </div>
         <h4 class="mb-2 mt-6 text-lg font-semibold text-gray-600 dark:text-gray-300">
             Užsakymai, kuriems priklauso {{$vehicle->license_plate}} automobilis:

@@ -16,7 +16,6 @@
             </label>
             </form>
 
-
             <h4 class="mb-2 mt-16 text-lg font-semibold text-gray-600 dark:text-gray-300">
                 Automobilio bendra specifikacija
             </h4>

@@ -10,7 +10,7 @@
             style="border-right: 2px solid #D1D5DB;"
         >
             <div class="py-4 text-gray-500 dark:text-gray-400 ">
-                <a class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200" href="#">Automistro</a>
+                <a class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200" href="{{ url('/') }}">{{ $companyName }}</a>
                 <ul class="mt-6">
                     <li class="relative px-6 py-3">
                         <a
@@ -147,6 +147,32 @@
                             </svg>
                             <span class="ml-4">Automobiliai</span>
                         </a>
+                    </li>
+                    @if(auth()->user()->isAdmin())
+                    <li class="relative px-6 py-3">
+                        <a
+                            class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                            href="/adminpanel"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="w-5 h-5"
+                                aria-hidden="true"
+                                fill="rgb(126,58,242)"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                viewBox="0 0 448 512"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"
+                                ></path>
+                            </svg>
+                            <span class="ml-4 text-purple-600">Administravimas</span>
+                        </a>
+                    </li>
+                        @endif
                 </ul>
                 <div class="px-6 my-6">
                 </div>

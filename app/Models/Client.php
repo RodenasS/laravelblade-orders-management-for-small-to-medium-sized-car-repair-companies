@@ -9,7 +9,7 @@ class Client extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'surname', 'email', 'phone', 'description'];
+    protected $fillable = ['name', 'company_code', 'company_vat_code' , 'email', 'phone'];
 
     public function scopeFilter($query, array $filters)
     {

@@ -15,11 +15,11 @@ class ClientFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->firstName,
-            'surname' => $this->faker->lastName,
+            'name' => $this->faker->name,
+            'company_code' => $this->faker->company,
+            'company_vat_code' => $this->faker->creditCardNumber,
             'email' => $this->faker->unique()->safeEmail,
             'phone' => $this->faker->phoneNumber,
-            'description' => $this->faker->text(200) // Ensure the length does not exceed the database field size
         ];
 
     }

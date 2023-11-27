@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\CompanyInformation;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\User;
@@ -10,15 +11,26 @@ use App\Models\Vehicle;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class OrderController extends Controller
 {
 // Show all orders
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::latest()->paginate(12);
+        $query = Order::latest();
 
-        return view('orders.index', compact('orders'), [
+        $start_date = $request->start_date ?? Carbon::yesterday()->format('Y-m-d');
+        $end_date = $request->end_date ?? Carbon::tomorrow()->format('Y-m-d');
+
+        if ($request->has('start_date') && $request->has('end_date')) {
+            $query->whereBetween('created_at', [$request->start_date, $request->end_date]);
+        }
+
+        $orders = $query->paginate(12);
+
+        return view('orders.index', compact('orders', 'start_date', 'end_date'), [
             'totalOrders' => $this->getTotalOrdersCount(),
             'ordersLast24Hours' => $this->getLast24HoursCount(),
             'ordersLast7Days' => $this->getLast7DaysCount(),
@@ -215,6 +227,31 @@ class OrderController extends Controller
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function generatePDF(Order $order)
+    {
+        $order->load(['client', 'vehicle', 'items']);
+
+        $companyInformation = CompanyInformation::firstOrFail();
+        $pdf = new Dompdf();
+
+        $html = view('orders.pdf', compact('order', 'companyInformation'))->render();
+        $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+        $pdf->loadHtml($html);
+
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $pdf->setOptions($options);
+
+        $pdf->setPaper('A4', 'portrait');
+
+        $pdf->render();
+
+        return $pdf->stream('sąskaita faktūra, užsakymo-' . $order->order_number . '.pdf');
     }
 }
 

@@ -5,9 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Pagination\Paginator;
 
 class UserController extends Controller
 {
+    public function index()
+    {
+        $users = User::latest()->paginate(12);
+
+        return view('users.index', ['users' => $users]);
+    }
+
     // Show register/create form
     public function create() {
         return view('users.register');
@@ -46,35 +54,63 @@ class UserController extends Controller
     public function login() {
         return view('users.login');
     }
-    public function edit($id)
+    public function edit()
     {
-        $user = User::findOrFail($id);
+        $user = auth()->user();
         return view('users.edit', compact('user'));
     }
 
-    // Update user information
-    public function update(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
 
-        $formFields = $request->validate([
+    // Update user information
+    public function update(Request $request)
+    {
+        $user = auth()->user();
+
+        $rules = [
             'name' => ['required', 'min:3'],
             'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
-            'password' => 'nullable|confirmed|min:6',
             'role' => 'string',
-        ]);
+        ];
+
+        // Check if a password input is provided
+        if ($request->filled('password')) {
+            $rules['password'] = ['nullable', 'confirmed', 'min:6'];
+        }
+
+        $formFields = $request->validate($rules);
+
+        // Update user data except for the password if it's not provided
+        if (!$request->filled('password')) {
+            unset($formFields['password']);
+        }
 
         // Update user data
         $user->update($formFields);
 
-        return redirect('/')->with('message', 'User information updated!');
+        return redirect()->route('profile.edit')->with('message', 'Profile updated successfully!');
     }
+
 
     // Show user details
     public function show($id)
     {
         $user = User::findOrFail($id);
         return view('users.show', compact('user'));
+    }
+
+    public function viewProfile()
+    {
+        $user = auth()->user();
+        return view('users.show', compact('user'));
+    }
+
+    // Delete user
+    public function destroy($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect('/adminpanel')->with('message', 'User deleted successfully!');
     }
 
     // Authenticate user

@@ -8,17 +8,37 @@ use Illuminate\Http\Request;
 
 class ClientController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Client::latest();
+
+        // Apply filters
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->name . '%');
+        }
+        if ($request->filled('clientCode')) {
+            // Extract the numeric part from the client code
+            $numericId = intval(substr($request->clientCode, 1));
+            $query->where('id', $numericId);
+        }
+        if ($request->filled('email')) {
+            $query->where('email', 'like', '%' . $request->email . '%');
+        }
+        if ($request->filled('phone')) {
+            $query->where('phone', 'like', '%' . $request->phone . '%');
+        }
+
+        $clients = $query->paginate(12);
+
         return view('clients.index', [
-            'clients' => Client::latest()->filter(request(['tag', 'search']))->paginate(12),
-            'totalClients' => $this->getTotalVehiclesCount(),
+            'clients' => $clients,
+            'totalClients' => $this->getTotalClientsCount(),
             'clientsLast24Hours' => $this->getLast24HoursCount(),
             'clientsLast7Days' => $this->getLast7DaysCount(),
             'clientsLast31Days' => $this->getLast31DaysCount()
         ]);
-
     }
+
 
     public function show(Client $client)
     {
@@ -63,10 +83,10 @@ class ClientController extends Controller
 
         $formFields = $request->validate([
             'name' => 'required',
-            'surname' => 'required',
+            'company_code' => 'required',
+            'company_vat_code' => 'required',
             'email' => ['required', 'email'],
             'phone' => 'required|numeric',
-            'description' => 'required',
         ]);
 
         $client->update($formFields);
@@ -80,7 +100,7 @@ class ClientController extends Controller
         $client->delete();
         return redirect('/clients')->with('message','Client deleted successfully!');
     }
-    public function getTotalVehiclesCount()
+    public function getTotalClientsCount()
     {
         return Client::count();
     }

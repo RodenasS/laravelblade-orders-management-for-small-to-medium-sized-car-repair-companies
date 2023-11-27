@@ -1,13 +1,17 @@
 <?php
 
+use App\Http\Controllers\AdminpanelController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CompanyInformationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VinDecoderController;
+use App\Models\CompanyInformation;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,27 +32,46 @@ use Illuminate\Support\Facades\Route;
 // update - update listing
 // destroy - destroy listing
 
+$companyInformation = CompanyInformation::first();
+$companyName = $companyInformation->name;
 
+// Share the company name with all views
+View::share('companyName', $companyName);
+
+// Sidebar
+Route::get('/company-information', [CompanyInformationController::class, 'show'])->name('company-information');
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/calendar-data', [DashboardController::class, 'calendarData'])->name('calendar.data');
-
 Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
+Route::get('/adminpanel', [AdminpanelController::class, 'index'])->name('adminpanel');
 
-//Show Register/Create Form
-Route::get('/register', [UserController::class, 'create'])->middleware('guest');
 
-//Create new user
-Route::post('/users', [UserController::class, 'store']);
+// USERS
+Route::get('/users', [UserController::class, 'index'])->name('users.index');
+Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+Route::post('/users', [UserController::class, 'store'])->name('users.store');
+Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+Route::put('/users/{id}', [UserController::class, 'update']);
+Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
 
-// Log User out
+// Edit user's own profile
+Route::get('/profile/edit', [UserController::class, 'edit'])->name('profile.edit');
+
+// Update user's own profile
+Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
+
+// View user's own profile
+Route::get('/profile', [UserController::class, 'viewProfile'])->name('profile.show');
+
+
+
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
-
-//Show Login form
 Route::get('/login', [UserController::class, 'login'])->name('login')->middleware('guest');
-
-//Login user
 Route::post('/users/authenticate', [UserController::class, 'authenticate']);
 
+Route::get('company_information/{companyInformation}/edit', [CompanyInformationController::class, 'edit'])->name('company_information.edit');
+Route::put('/company_information/{companyInformation}', [CompanyInformationController::class, 'update']);
 // CLIENT ROUTES
 
 Route::get('/clients', [ClientController::class, 'index'])->name('clients.index');
@@ -78,6 +101,7 @@ Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.sh
 Route::get('/orders/{order}/edit', [OrderController::class, 'edit'])->name('orders.edit');
 Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
 Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
+Route::post('/generate-pdf/{order}', [OrderController::class, 'generatePDF'])->name('generatePDF');
 
 Route::get('/vin-decoder', [VinDecoderController::class, 'show']);
 Route::get('/decode/{vin}', [VinDecoderController::class, 'decode']);
