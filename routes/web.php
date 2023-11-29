@@ -4,8 +4,10 @@ use App\Http\Controllers\AdminpanelController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CompanyInformationController;
+use App\Http\Controllers\CustomResetPasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VinDecoderController;
@@ -54,15 +56,15 @@ Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.e
 Route::put('/users/{id}', [UserController::class, 'update']);
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+Route::get('/user-profile-picture', [UserController::class, 'getUserProfilePicture'])->name('user.profile-picture');
 
 // Edit user's own profile
-Route::get('/profile/edit', [UserController::class, 'edit'])->name('profile.edit');
+Route::get('/profile/edit', [UserController::class, 'editOwnProfile'])->name('profile.edit');
 
-// Update user's own profile
-Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
-
-// View user's own profile
-Route::get('/profile', [UserController::class, 'viewProfile'])->name('profile.show');
+// Password reset routes
+Route::get('password/reset', [CustomResetPasswordController::class, 'showResetForm'])->name('password.request');
+Route::post('password/email', [CustomResetPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::post('password/reset', [CustomResetPasswordController::class, 'reset'])->name('password.update');
 
 
 
@@ -105,3 +107,5 @@ Route::post('/generate-pdf/{order}', [OrderController::class, 'generatePDF'])->n
 
 Route::get('/vin-decoder', [VinDecoderController::class, 'show']);
 Route::get('/decode/{vin}', [VinDecoderController::class, 'decode']);
+
+Route::get('/search', [SearchController::class, 'search'])->name('search');

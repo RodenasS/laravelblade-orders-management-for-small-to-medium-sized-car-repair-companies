@@ -1,7 +1,7 @@
 @extends('master')
 @section('body')
     <div
-        class="flex h-screen bg-gray-50 dark:bg-gray-900"
+        class="flex w-full h-full bg-gray-50 dark:bg-gray-900"
         :class="{ 'overflow-hidden': isSideMenuOpen}"
     >
         <!-- Desktop sidebar -->
@@ -14,7 +14,7 @@
                 <ul class="mt-6">
                     <li class="relative px-6 py-3">
                         <a
-                            class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
+                            class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
                             href="/"
                         >
                             <svg
@@ -209,12 +209,8 @@
                 </a>
                 <ul class="mt-6">
                     <li class="relative px-6 py-3">
-              <span
-                  class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg"
-                  aria-hidden="true"
-              ></span>
                         <a
-                            class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
+                            class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
                             href="/"
                         >
                             <svg
@@ -350,9 +346,9 @@
                 </ul>
             </div>
         </aside>
-        <div class="h-full flex flex-col flex-1">
+        <div class="w-full h-full flex flex-col flex-1">
             @include('components/header')
-            <main class="h-full pb-16 overflow-y-auto">
+            <main class="w-full min-h-screen h-full pb-16 overflow-y-auto">
             @yield('content')
             </main>
         </div>

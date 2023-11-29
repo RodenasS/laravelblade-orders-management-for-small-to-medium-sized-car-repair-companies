@@ -10,17 +10,42 @@ use Illuminate\Http\Request;
 class VehicleController extends Controller
 {
     // Display a listing of vehicles
-    public function index()
+    public function index(Request $request)
     {
+        $query = Vehicle::query();
+
+        if ($request->filled('make')) {
+            $query->where(function ($subQuery) use ($request) {
+                $subQuery->where('brand', 'like', '%' . $request->input('make') . '%')
+                    ->orWhere('model', 'like', '%' . $request->input('make') . '%');
+            });
+        }
+
+        if ($request->filled('number_plate')) {
+            $query->where('license_plate', 'like', '%' . $request->input('number_plate') . '%');
+        }
+
+        if ($request->filled('client_name')) {
+            $query->whereHas('client', function ($subQuery) use ($request) {
+                $subQuery->where('name', 'like', '%' . $request->input('client_name') . '%');
+            });
+        }
+
+        if ($request->filled('vin')) {
+            $query->where('vin', 'like', '%' . $request->input('vin') . '%');
+        }
+
+        $vehicles = $query->latest()->paginate(12);
+
         return view('vehicles.index', [
-            'vehicles' => Vehicle::latest()->paginate(12),
+            'vehicles' => $vehicles,
             'totalVehicles' => $this->getTotalVehiclesCount(),
             'vehiclesLast24Hours' => $this->getLast24HoursCount(),
             'vehiclesLast7Days' => $this->getLast7DaysCount(),
             'vehiclesLast31Days' => $this->getLast31DaysCount()
         ]);
-
     }
+
 
     // Show the form for creating a new vehicle
     public function create()

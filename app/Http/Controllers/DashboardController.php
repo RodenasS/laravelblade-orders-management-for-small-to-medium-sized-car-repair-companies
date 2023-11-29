@@ -44,15 +44,30 @@ class DashboardController extends Controller
         $orders = Order::with('vehicle')->get()->map(function ($order) {
             $vehicleInfo = $order->vehicle ? $order->vehicle->brand . ' ' . $order->vehicle->model : 'No Vehicle';
 
+            $color = '';
+            switch ($order->status) {
+                case 'vykdomas':
+                    $color = '#EEB76B';
+                    break;
+                case 'įvykdytas':
+                    $color = '#346751';
+                    break;
+                case 'atšauktas':
+                    $color = '#B42B51';
+                    break;
+            }
+
             return [
                 'title' => $order->order_number . ' - ' . $vehicleInfo,
                 'start' => $order->estimated_start,
                 'end' => $order->estimated_end,
                 'url' => route('orders.show', $order->id),
-                'status' => $order->status,
+                'backgroundColor' => $color, // Set background color here
+                'extendedProps' => [
+                    'status' => $order->status,
+                ],
             ];
         });
-
         return response()->json($orders);
     }
 }

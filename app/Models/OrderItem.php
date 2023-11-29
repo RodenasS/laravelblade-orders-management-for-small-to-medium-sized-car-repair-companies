@@ -18,6 +18,15 @@ class OrderItem extends Model
         'unit_price',
     ];
 
+    public function scopeFilter($query, array $filters)
+    {
+        if ($filters['search'] ?? false) {
+            $query->where(function ($query) use ($filters) {
+                $query->orWhere('product_code', 'like', '%' . $filters['search'] . '%')
+                    ->orWhere('product_name', 'like', '%' . $filters['search'] . '%');
+            });
+        }
+    }
     public function order()
     {
         return $this->belongsTo(Order::class);

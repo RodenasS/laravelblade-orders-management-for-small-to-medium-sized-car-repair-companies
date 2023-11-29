@@ -54,40 +54,49 @@ class UserController extends Controller
     public function login() {
         return view('users.login');
     }
-    public function edit()
+    public function edit(User $user)
     {
-        $user = auth()->user();
         return view('users.edit', compact('user'));
     }
 
 
-    // Update user information
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
-        $user = auth()->user();
+        $user = User::findOrFail($id);
 
-        $rules = [
-            'name' => ['required', 'min:3'],
-            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
-            'role' => 'string',
-        ];
+        // Check if the logged-in user is an admin or is editing their own profile
+        if (auth()->user()->isAdmin() || auth()->user()->id === $user->id) {
+            $rules = [
+                'name' => ['required', 'min:3'],
+                'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
+                'role' => 'string',
+                'profile_picture' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust the allowed file types and size
+            ];
 
-        // Check if a password input is provided
-        if ($request->filled('password')) {
-            $rules['password'] = ['nullable', 'confirmed', 'min:6'];
+            $formFields = $request->validate($rules);
+
+            if ($request->hasFile('profile_picture')) {
+                // Handle profile picture update
+                $uploadedFile = $request->file('profile_picture');
+                $path = $uploadedFile->store('profile_pictures', 'public'); // Adjust the storage path as needed
+                $formFields['profile_picture'] = $path;
+            } elseif ($request->has('remove_profile_picture')) {
+                // Handle profile picture removal
+                $formFields['profile_picture'] = null;
+            }
+
+            // Update user data
+            $user->update($formFields);
+
+            // Check if the updated user is the authenticated user
+            if ($user->id === auth()->user()->id) {
+                return redirect()->route('profile.edit')->with('message', 'Profile updated successfully!');
+            } else {
+                return redirect('/adminpanel')->with('message', 'Profile updated successfully for another user!');
+            }
+        } else {
+            return redirect('/')->with('error', 'You are not authorized to update this profile.');
         }
-
-        $formFields = $request->validate($rules);
-
-        // Update user data except for the password if it's not provided
-        if (!$request->filled('password')) {
-            unset($formFields['password']);
-        }
-
-        // Update user data
-        $user->update($formFields);
-
-        return redirect()->route('profile.edit')->with('message', 'Profile updated successfully!');
     }
 
 
@@ -98,10 +107,10 @@ class UserController extends Controller
         return view('users.show', compact('user'));
     }
 
-    public function viewProfile()
+    public function editOwnProfile()
     {
         $user = auth()->user();
-        return view('users.show', compact('user'));
+        return view('profile.edit', compact('user'));
     }
 
     // Delete user
@@ -111,6 +120,20 @@ class UserController extends Controller
         $user->delete();
 
         return redirect('/adminpanel')->with('message', 'User deleted successfully!');
+    }
+    public function getUserProfilePicture()
+    {
+        $user = auth()->user();
+        $defaultProfilePicture = asset('assets/default-profile-picture.png');
+
+        if ($user && $user->profile_picture) {
+            $profilePictureUrl = asset('storage/' . $user->profile_picture);
+        } else {
+            // Use the default profile picture URL if the user has no picture
+            $profilePictureUrl = $defaultProfilePicture;
+        }
+
+        return response()->json(['profile_picture_url' => $profilePictureUrl]);
     }
 
     // Authenticate user

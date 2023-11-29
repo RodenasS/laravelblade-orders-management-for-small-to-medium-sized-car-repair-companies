@@ -1,12 +1,17 @@
 @extends('components/layout')
 @section('content')
+    <style>
+        .fc-h-event {
+            border: 0;
+        }
+    </style>
     <main class="h-full pb-16 overflow-y-auto">
         <div class="container px-6 mx-auto grid">
             <div class="mb-4 mt-6">
                 <span class=" text-gray-700 dark:text-gray-400">Sveiki, sugrįžę <b> {{$userName}}</b>! </span>
             </div>
 
-                <div id='calendar'></div>
+                <div class="mb-4 font-semibold text-gray-800 dark:text-gray-300" id='calendar'></div>
 
             <h4 class="mt-6 mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300">Šios dienos informacija</h4>
 
@@ -184,14 +189,13 @@
                     var calendarEl = document.getElementById('calendar');
                     var calendar = new FullCalendar.Calendar(calendarEl, {
                         initialView: 'dayGridMonth',
-                        eventColor: '#7e3af2', // Set the default event color
                         timeZone: 'Europe/Vilnius',
-                        locale: 'lt', // Set the locale to Lithuanian
-                        events: '/calendar-data', // Fetch events from the calendar data route
-                        eventTimeFormat: { // specify the time format
+                        locale: 'lt',
+                        events: '/calendar-data',
+                        eventTimeFormat: {
                             hour: '2-digit',
                             minute: '2-digit',
-                            hour12: false // this is the key to display 24-hour format
+                            hour12: false
                         },
                         displayEventTime: false,
                         buttonText: {
@@ -202,6 +206,7 @@
                             list: 'Sąrašas'
                         },
                     });
+
                     calendar.render();
                 });
             </script>

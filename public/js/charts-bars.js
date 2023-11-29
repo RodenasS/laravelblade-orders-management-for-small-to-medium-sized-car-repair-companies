@@ -1,33 +1,26 @@
 /**
  * For usage, visit Chart.js docs https://www.chartjs.org/docs/latest/
  */
+
 const barConfig = {
-  type: 'bar',
-  data: {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-      {
-        label: 'Shoes',
-        backgroundColor: '#0694a2',
-        // borderColor: window.chartColors.red,
-        borderWidth: 1,
-        data: [-3, 14, 52, 74, 33, 90, 70],
-      },
-      {
-        label: 'Bags',
-        backgroundColor: '#7e3af2',
-        // borderColor: window.chartColors.blue,
-        borderWidth: 1,
-        data: [66, 33, 43, 12, 54, 62, 84],
-      },
-    ],
-  },
-  options: {
-    responsive: true,
-    legend: {
-      display: false,
+    type: 'bar',
+    data: {
+        datasets: [
+            {
+                data: top3BrandCounts,
+                backgroundColor: ['#003f5c', '#58508d', '#bc5090', '#ff6361', '#ffa600'], // Customize colors as needed
+                label: 'Dataset 1',
+            },
+        ],
+        labels: top3BrandLabels,
     },
-  },
+    options: {
+        responsive: true,
+        cutoutPercentage: 70,
+        legend: {
+            display: false, // Display the legend
+        },
+    },
 }
 
 const barsCtx = document.getElementById('bars')

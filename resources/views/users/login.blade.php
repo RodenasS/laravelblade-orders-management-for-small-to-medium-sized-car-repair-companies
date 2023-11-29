@@ -41,7 +41,7 @@
                         </button>
                         <hr class="my-8"/>
                         <p class="mt-4">
-                            <a class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline" href="./forgot-password.html">Slaptažodžio atstatymas</a>
+                            <a class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline" href="/forgot-password">Slaptažodžio atstatymas</a>
                         </p>
                     </div>
                 </div>

@@ -13,15 +13,15 @@ class Client extends Model
 
     public function scopeFilter($query, array $filters)
     {
-        if ($filters['tag'] ?? false) {
-            $query->where('tag', $filters['tag']);
-        }
-
         if ($filters['search'] ?? false) {
-            $query->where('name', 'like', '%'.$filters['search'].'%');
+            $query->where(function ($query) use ($filters) {
+                $query->orWhere('name', 'like', '%' . $filters['search'] . '%')
+                    ->orWhere('company_code', 'like', '%' . $filters['search'] . '%')
+                    ->orWhere('company_vat_code', 'like', '%' . $filters['search'] . '%')
+                    ->orWhere('email', 'like', '%' . $filters['search'] . '%')
+                    ->orWhere('phone', 'like', '%' . $filters['search'] . '%');
+            });
         }
-
-        return $query;
     }
 
     public function vehicles() {

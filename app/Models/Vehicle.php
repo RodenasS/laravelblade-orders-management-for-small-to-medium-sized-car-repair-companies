@@ -21,6 +21,18 @@ class Vehicle extends Model
         'description',
     ];
 
+    public function scopeFilter($query, array $filters)
+    {
+        if ($filters['search'] ?? false) {
+            $query->where(function ($query) use ($filters) {
+                $query->orWhere('brand', 'like', '%' . $filters['search'] . '%')
+                    ->orWhere('model', 'like', '%' . $filters['search'] . '%')
+                    ->orWhere('license_plate', 'like', '%' . $filters['search'] . '%')
+                    ->orWhere('vin', 'like', '%' . $filters['search'] . '%');
+            });
+        }
+    }
+
     // Relationship to Client
     public function client() {
         return $this->belongsTo(Client::class, 'client_id');

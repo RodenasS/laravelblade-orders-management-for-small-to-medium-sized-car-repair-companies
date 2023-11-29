@@ -146,10 +146,11 @@
             <input type="file" name="images[]" id="imageUpload" multiple>
 
             <!-- Container for Existing Image Previews -->
+            <input type="hidden" name="removedImageIds" id="removedImageIds" value="">
             <div class="flex" id="imagePreviewContainer">
                 @foreach($order->images as $image)
                     <div class="relative mr-2">
-                        <img src="{{ Storage::url($image->path) }}" class="mt-2 w-56 md:h-auto object-cover" />
+                        <img src="{{ Storage::url($image->path) }}" class="mt-2 w-56 md:h-auto object-cover rounded-lg border border-gray-300" />
                         <button type="button" class="absolute top-0 right-0 bg-red-600 text-white rounded-full px-2 py-1 text-xs" onclick="removeImage(this, '{{ $image->id }}')">X</button>
                     </div>
                 @endforeach
@@ -229,9 +230,16 @@
         // Image preview
 
         function removeImage(button, imageId) {
-            // Logic to handle the deletion of the image
-            // This could involve making an AJAX request to delete the image from the server
+            // Remove the image preview from the client-side
             button.parentElement.remove();
+
+            // Store the removed image ID in a hidden field for server-side deletion
+            var removedImageIds = document.getElementById('removedImageIds');
+            if (removedImageIds.value) {
+                removedImageIds.value += ',' + imageId;
+            } else {
+                removedImageIds.value = imageId;
+            }
         }
 
         document.getElementById('imageUpload').addEventListener('change', function(event) {

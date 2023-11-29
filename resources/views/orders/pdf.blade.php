@@ -92,7 +92,7 @@
 <div class="invoice-container">
     <div class="header">
         <h2>PVM SĄSKAITA FAKTŪRA</h2>
-        <h3>Nr. </h3>
+        <h3>Nr.{{ $invoice_number }}</h3>
         <h3>{{ date('Y-m-d') }}</h3>
     </div>
 
@@ -105,8 +105,7 @@
             <p>Adresas: {{ $companyInformation->address }}</p>
             <p>El. paštas : {{ $companyInformation->email }}</p>
             <p>Tel: {{ $companyInformation->phone_number }}, Fax: {{ $companyInformation->fax }}</p>
-            <p>Ats.
-                sąsk.: {{ $companyInformation->invoice_account }} {{ $companyInformation->invoice_account_bank }}</p>
+            <p>Ats. sąsk.: {{ $companyInformation->invoice_account }} {{ $companyInformation->invoice_account_bank }}</p>
         </div>
 
         <div class="client-info">

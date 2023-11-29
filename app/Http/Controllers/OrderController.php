@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Models\CompanyInformation;
 use App\Models\Order;
+use App\Models\OrderImage;
 use App\Models\OrderItem;
 use App\Models\User;
 use App\Models\Vehicle;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -160,7 +162,6 @@ class OrderController extends Controller
         $formFields['vat'] = $totalExVat * $vatRate;
         $formFields['total_inc_vat'] = $totalExVat * (1 + $vatRate);
 
-        // Update the order
         $order->update($formFields);
 
         // Update order items
@@ -169,6 +170,7 @@ class OrderController extends Controller
             $order->items()->create($itemData);
         }
 
+
         // Handle images
         if ($request->has('images')) {
             $order->images()->delete(); // Remove existing images
@@ -176,8 +178,23 @@ class OrderController extends Controller
                 $imagePath = $image->store('images', 'public');
                 $order->images()->create(['path' => $imagePath]);
             }
+        } else {
+            // If no new images were provided, do not delete existing images
+            $order->images()->createMany([]);
         }
 
+        $removedImageIds = explode(',', $request->input('removedImageIds'));
+        foreach ($removedImageIds as $imageId) {
+            // Find the image by ID
+            $image = OrderImage::find($imageId); // Use the correct model here
+            if ($image) {
+                $imagePath = $image->path; // Get the image path from the model
+                $image->delete();
+
+                // Delete the image from storage
+                Storage::delete('public/' . $imagePath);
+            }
+        }
         return back()->with('message', 'Order updated successfully!');
     }
 
@@ -232,11 +249,12 @@ class OrderController extends Controller
     public function generatePDF(Order $order)
     {
         $order->load(['client', 'vehicle', 'items']);
+        $invoice_number = substr($order->order_number, 1);
 
         $companyInformation = CompanyInformation::firstOrFail();
         $pdf = new Dompdf();
 
-        $html = view('orders.pdf', compact('order', 'companyInformation'))->render();
+        $html = view('orders.pdf', compact('order', 'companyInformation', 'invoice_number'))->render();
         $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
         $pdf->loadHtml($html);
 

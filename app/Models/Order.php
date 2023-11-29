@@ -27,6 +27,7 @@ class Order extends Model
         'description',
     ];
 
+
     protected static function boot()
     {
         parent::boot();
@@ -39,13 +40,19 @@ class Order extends Model
 
     public function scopeFilter($query, array $filters)
     {
-
         if ($filters['search'] ?? false) {
-            $query->where('order_number', 'like', '%' . request('search') . '%')
-                ->orWhere('date', 'like', '%' . request('search') . '%')
-                ->orWhere('client_id', 'like', '%' . request('search') . '%');
+            $query->where(function ($query) use ($filters) {
+                $query->orWhere('order_number', 'like', '%' . $filters['search'] . '%')
+                    ->orWhere('date', 'like', '%' . $filters['search'] . '%')
+                    ->orWhere('status', 'like', '%' . $filters['search'] . '%')
+                    ->orWhere('description', 'like', '%' . $filters['search'] . '%')
+                    ->orWhereHas('client', function ($subQuery) use ($filters) {
+                        $subQuery->where('name', 'like', '%' . $filters['search'] . '%');
+                    });
+            });
         }
     }
+
     public function generatePDF()
     {
         // Load necessary data

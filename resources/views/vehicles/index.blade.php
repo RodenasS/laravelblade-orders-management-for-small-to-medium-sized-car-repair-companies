@@ -73,6 +73,29 @@
                             <th class="px-4 py-3">Veiksmai</th>
                         </tr>
                         </thead>
+                        <form method="GET" action="{{ route('vehicles.index') }}">
+                            <tr class="dark:bg-gray-800 text-gray-700 dark:text-gray-400 border-hidden">
+                                <td class="px-4 py-3">
+                                    <input type="text" name="make" class="form-input block w-full dark:bg-gray-800" placeholder="Markė ar modelis" value="{{ request('make') }}">
+                                </td>
+                                <td class="px-4 py-3">
+                                    <input type="text" name="number_plate" class="form-input block w-full dark:bg-gray-800" placeholder="Valst. numeriai" value="{{ request('number_plate') }}">
+                                </td>
+                                <td class="px-4 py-3">
+                                    <input type="text" name="client_name" class="form-input block w-full dark:bg-gray-800" placeholder="Savininkas" value="{{ request('client_name') }}">
+                                </td>
+                                <td class="px-4 py-3">
+                                    <input type="text" name="vin" class="form-input block w-full dark:bg-gray-800" placeholder="VIN kodas" value="{{ request('vin') }}">
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center space-x-4 text-sm">
+                                        <button type="submit" class="px-5 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                            Filtruoti
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </form>
                         @unless(count($vehicles) == 0)
                             @foreach ($vehicles as $vehicle)
                                 <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800 ">
@@ -105,7 +128,7 @@
                                             {{$vehicle->license_plate}}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3 text-sm"> {{$vehicle->client->name}} {{$vehicle->client->surname}} </td>
+                                    <td class="px-4 py-3 text-sm"> {{$vehicle->client->name}}</td>
                                     <td class="px-4 py-3 text-sm"> {{$vehicle->vin}} </td>
                                     <td class="px-4 py-3">
                                         <div class="flex items-center space-x-4 text-sm">
@@ -134,7 +157,7 @@
                                 </tbody>
                             @endforeach
                         @else
-                            <p> Nerasta jokių įrašų</p>
+                            <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-300">Nerasta automobilių įrašų.</h4>
                         @endunless
                     </table>
                     <div class="px-6 mt-2 mb-2">

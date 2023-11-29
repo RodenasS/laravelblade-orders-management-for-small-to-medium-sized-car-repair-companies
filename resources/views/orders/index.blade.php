@@ -1,6 +1,5 @@
 @extends('components/layout')
 @section('content')
-    <main class="h-full pb-16 overflow-y-auto">
         <div class="mt-8 px-6 grid gap-6 container mx-auto md:grid-cols-2 xl:grid-cols-4">
             <!-- Card -->
             <div
@@ -71,7 +70,7 @@
                 </div>
             </div>
         </div>
-        <div class="h-full ">
+        <div class="">
             <div class="container px-6 mx-auto ">
                 <div class="flex justify-between">
                     <form method="GET" action="{{ route('orders.index') }}">
@@ -218,5 +217,4 @@
             });
 
         </script>
-    </main>
 @endsection
