@@ -98,6 +98,16 @@
                 <span class="text-gray-700 dark:text-gray-400">
                   Užsakymo būsena:
                 </span>
+                    <label for="sms_notifications" class="block text-sm">
+                        <input
+                            type="checkbox"
+                            id="sms_notifications"
+                            name="sms_notifications"
+                            class="form-checkbox text-purple-600"
+                            {{ old('sms_notifications') ? 'checked' : '' }}
+                        />
+                        <span class="text-gray-700 dark:text-gray-400">Siųsti SMS pranešimus</span>
+                    </label>
                     <select
                         name="status" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray">
                         <option class="px-2 py-1 font-semibold leading-tight text-orange-700 bg-orange-100 rounded-full dark:text-white dark:bg-orange-600">Vykdomas</option>
@@ -105,6 +115,7 @@
                         <option class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-700">Atšauktas</option>
                     </select>
                 </label>
+
                 @error('status')
                 <p class="text-red-500 text-xs mt-1">{{$message}}</p>
                 @enderror
@@ -154,7 +165,7 @@
                     class="mb-2 mt-8 text-lg font-semibold text-gray-600 dark:text-gray-300">Nuotraukų įkėlimas
                 </h4>
                 <!-- File Input Field -->
-                <input type="file" name="images[]" id="imageUpload" multiple>
+                <input type="file" name="images[]" id="imageUpload" class="text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" multiple>
 
                 <!-- Container for Image Previews -->
                 <div class="flex" id="imagePreviewContainer"></div>
@@ -176,19 +187,19 @@
         newItem.classList.add('text-gray-700', 'dark:text-gray-400', 'border-hidden');
         newItem.innerHTML = `
         <td class="px-4 py-3">
-            <input type="text" name="items[${itemIndex}][product_code]" class="form-input block w-full" placeholder="Kodas">
+            <input type="text" name="items[${itemIndex}][product_code]" class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="Kodas">
         </td>
         <td class="px-4 py-3">
-            <input type="text" name="items[${itemIndex}][product_name]" class="form-input block w-full" placeholder="Pavadinimas">
+            <input type="text" name="items[${itemIndex}][product_name]" class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="Pavadinimas">
         </td>
         <td class="px-4 py-3">
-            <input type="number" name="items[${itemIndex}][quantity]" class="form-input block w-full" placeholder="Kiekis">
+            <input type="number" name="items[${itemIndex}][quantity]" class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="Kiekis">
         </td>
         <td class="px-4 py-3">
-            <input type="text" name="items[${itemIndex}][unit]" class="form-input block w-full" placeholder="Vienetai">
+            <input type="text" name="items[${itemIndex}][unit]" class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="Vienetai">
         </td>
         <td class="px-4 py-3">
-            <input type="text" name="items[${itemIndex}][unit_price]" class="form-input block w-full" placeholder="Kaina">
+            <input type="text" name="items[${itemIndex}][unit_price]" class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="Kaina">
         </td>
         <td class="px-4 py-3">
             <div class="flex items-center space-x-4 text-sm">

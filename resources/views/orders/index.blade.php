@@ -75,9 +75,9 @@
                 <div class="flex justify-between">
                     <form method="GET" action="{{ route('orders.index') }}">
                         <div class="mt-6 flex space-x-4">
-                            <input type="text" id="start_date" name="start_date" class="form-input"
+                            <input type="text" id="start_date" name="start_date" class="form-input dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400"
                                    value="{{ $start_date }}">
-                            <input type="text" id="end_date" name="end_date" class="form-input" value="{{ $end_date }}">
+                            <input type="text" id="end_date" name="end_date" class="form-input dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400" value="{{ $end_date }}">
                             <button type="submit"
                                     class="px-3 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                                 Filtruoti
@@ -109,13 +109,11 @@
                                     <tr class="text-gray-700 dark:text-gray-400">
                                         <td class="px-4 py-3">
                                             <div class="flex items-center text-sm">
-                                                <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
-                                                    <svg class="object-cover w-full h-full rounded-full"
-                                                         xmlns="http://www.w3.org/2000/svg" width="32" height="32"
-                                                         fill="#000000" viewBox="0 0 256 256">
-                                                        <path
-                                                            d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200ZM184,96a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,96Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,128Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,160Z"></path>
+                                                <div class="relative hidden w-8 h-8 mr-3 md:block">
+                                                    <svg class="object-cover w-full h-full " xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="32" height="32">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
                                                     </svg>
+
                                                     <div class="absolute inset-0 rounded-full shadow-inner"
                                                          aria-hidden="true"></div>
                                                 </div>
@@ -127,7 +125,7 @@
                                         </td>
                                         <td class="px-4 py-3 text-sm">
                                         <span
-                                            style="font-weight: bold; font-size: 20px; background-image: url('{{ asset('storage/assets/number-plate.png') }}'); background-size: 100%; background-repeat: no-repeat; padding: 0 13px; color: black;">
+                                            style="font-weight: bold; font-size: 20px; background-image: url('{{ asset('storage/assets/number-plate.png') }}'); background-size: contain; background-repeat: no-repeat; padding: 0 18px; color: black;">
                                             {{$order->vehicle->license_plate}}
                                         </span>
                                         </td>

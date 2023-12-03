@@ -14,6 +14,14 @@
             </div>
             <div class="mb-8 px-4 py-3 mb-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
                 <div class="mb-4">
+                    <img
+                        class="object-cover w-auto h-32 rounded-full"
+                        src="{{ asset('storage/logos/logo.png') }}"
+                        alt=""
+                        aria-hidden="true"
+                    />
+                </div>
+                <div class="mb-4">
                     <span class="text-gray-700 dark:text-gray-400">Įmonės pavadinimas: </span> <br>
                     <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $company->name }}</h5>
                 </div>
@@ -81,9 +89,8 @@
                                 <td class="px-4 py-3">
                                     <div class="flex items-center text-sm">
                                         <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
-                                            <img class="object-cover w-full h-full rounded-full"
-                                                 src="https://cdn.icon-icons.com/icons2/2468/PNG/512/user_icon_149344.png"
-                                                 alt="" loading="lazy"/>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="object-cover w-full h-full rounded-full dark:bg-gray-700"  fill="#000000" viewBox="0 0 256 256"><path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"></path></svg>
+
                                             <div class="absolute inset-0 rounded-full shadow-inner"
                                                  aria-hidden="true"></div>
                                         </div>

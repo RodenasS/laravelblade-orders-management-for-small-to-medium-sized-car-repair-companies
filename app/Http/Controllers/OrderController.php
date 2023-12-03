@@ -94,7 +94,7 @@ class OrderController extends Controller
             $formFields['total_ex_vat'] = $totalExVat;
             $formFields['vat'] = $totalExVat * $vatRate;
             $formFields['total_inc_vat'] = $totalExVat * (1 + $vatRate);
-
+            $formFields['sms_notifications'] = $request->has('sms_notifications') ? 1 : 0;
             // Create the order
             $formFields['user_id'] = auth()->id();
             $order = Order::create($formFields);
@@ -161,7 +161,7 @@ class OrderController extends Controller
         $formFields['total_ex_vat'] = $totalExVat;
         $formFields['vat'] = $totalExVat * $vatRate;
         $formFields['total_inc_vat'] = $totalExVat * (1 + $vatRate);
-
+        $formFields['sms_notifications'] = $request->has('sms_notifications') ? 1 : 0;
         $order->update($formFields);
 
         // Update order items

@@ -26,3 +26,14 @@ $(document).ready(function() {
     });
 });
 
+flatpickr("#end_date", {
+    enableTime: true, // Enable time picker
+    dateFormat: "Y-m-d", // Date format including hours and minutes
+    locale: "lt",
+});
+
+flatpickr("#start_date", {
+    enableTime: true, // Enable time picker
+    dateFormat: "Y-m-d", // Date format including hours and minutes
+    locale: "lt",
+});

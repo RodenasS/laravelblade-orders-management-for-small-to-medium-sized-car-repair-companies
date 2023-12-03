@@ -109,7 +109,7 @@
                 <h5 class="font-semibold dark:text-gray-400 text-purple-600">{{ $order->total_inc_vat }} €</h5>
             </div>
 
-            <div class="mb-4">
+            <div class="">
                 <span class="text-gray-700 dark:text-gray-400">Užsakymo būsena: </span>
                 @if (mb_strtolower(trim($order->status), 'UTF-8') == 'įvykdytas')
                     <span
@@ -126,6 +126,9 @@
                         class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-700">Atšauktas</span>
                 @endif
             </div>
+        @if($order->sms_notifications)
+                <p class="text-red-600">Pranešimai klientui bus siunčiami kaskart atnaujinus užsakymo būseną!</p>
+            @endif
             <div class="mb-4">
                 <span class="text-gray-700 dark:text-gray-400">Papildoma užsakymo informacija: </span>
                 <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $order->description }}</h5>
@@ -182,6 +185,18 @@
         </h4>
         <span
             class="block w-full dark:bg-gray-800 dark:text-gray-400">Spausti ant nuotraukos norint ją išdidinti </span>
+        <div class="flex" id="imagePreviewContainer">
+            @foreach($order->images as $image)
+                <div class="relative mr-2">
+                    <img src="{{ Storage::url($image->path) }}"
+                         class="mt-2 w-56 h-auto object-cover cursor-pointer image-item"/>
+                    <button
+                        class="mt-1 px-2 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple download-btn"
+                        data-url="{{ Storage::url($image->path) }}">Atsisiųsti
+                    </button>
+                </div>
+            @endforeach
+        </div>
     </div>
     </body>
 
@@ -223,5 +238,4 @@
             });
         });
     </script>
-    </body>
 @endsection

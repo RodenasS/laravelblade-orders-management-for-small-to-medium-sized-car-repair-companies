@@ -9,7 +9,7 @@ const barConfig = {
             {
                 data: top3BrandCounts,
                 backgroundColor: ['#003f5c', '#58508d', '#bc5090', '#ff6361', '#ffa600'], // Customize colors as needed
-                label: 'Dataset 1',
+                label: '',
             },
         ],
         labels: top3BrandLabels,

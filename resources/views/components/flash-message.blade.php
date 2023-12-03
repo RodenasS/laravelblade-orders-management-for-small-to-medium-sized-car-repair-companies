@@ -1,6 +1,8 @@
 @if(session()->has('message'))
+    @extends('components/layout')
+    @section('content')
     <!-- Modal body -->
-    <div class="mt-4 mb-6">
+    <div class="z-30 mt-4 mb-6">
         <!-- Modal title -->
         <p
             class="mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300"
@@ -27,4 +29,5 @@
             Accept
         </button>
     </footer>
+    @endsection
 @endif

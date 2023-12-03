@@ -113,6 +113,7 @@
             <p><b>{{$order->client->name}}</b></p>
             <p>Įmonės kodas: {{$order->client->company_code}}</p>
             <p>PVM kodas: {{$order->client->company_vat_code}}</p>
+            <p>Adresas: {{$order->client->address}}</p>
             <p>Tel. nr.: {{$order->client->phone}}</p>
             <p>El. paštas: {{$order->client->email}}</p>
             <p>Kliento kodas: {{$order->client->clientCode}} </p>

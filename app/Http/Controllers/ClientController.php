@@ -52,10 +52,11 @@ class ClientController extends Controller
     {
         $formFields = $request->validate([
             'name' => 'required',
-            'surname' => 'required',
+            'company_code' => 'required',
+            'company_vat_code' => 'required',
             'email' => ['required', 'email'],
             'phone' => 'required|numeric',
-            'description' => 'required',
+            'address' => 'required',
         ]);
 
         Client::create($formFields);
@@ -87,6 +88,7 @@ class ClientController extends Controller
             'company_vat_code' => 'required',
             'email' => ['required', 'email'],
             'phone' => 'required|numeric',
+            'address' => 'required',
         ]);
 
         $client->update($formFields);

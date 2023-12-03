@@ -20,6 +20,7 @@ class ClientFactory extends Factory
             'company_vat_code' => $this->faker->creditCardNumber,
             'email' => $this->faker->unique()->safeEmail,
             'phone' => $this->faker->phoneNumber,
+            'address' => $this->faker->address,
         ];
 
     }

@@ -50,6 +50,19 @@
                     <p class="text-red-500 text-xs mt-1">{{$message}}</p>
                     @enderror
 
+                    <label for="address" class="mb-4 block text-sm">
+                        <span class="text-gray-700 dark:text-gray-400">Adresas</span>
+                        <input
+                            name="address"
+                            class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                            placeholder=""
+                            value="{{$client->address}}"
+                        />
+                    </label>
+                    @error('address')
+                    <p class="text-red-500 text-xs mt-1">{{$message}}</p>
+                    @enderror
+
                     <label for="email" class="mb-4 block text-sm">
                         <span class="text-gray-700 dark:text-gray-400">El. paštas</span>
                         <input

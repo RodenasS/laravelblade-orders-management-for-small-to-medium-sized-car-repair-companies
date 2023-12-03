@@ -2,22 +2,3 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-.select2-container .select2-selection--single .select2-selection__rendered {
-
-    display: block;
-    padding-left: 8px;
-    padding-right: 20px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-color: #fff;
-    border-color: #e2e8f0;
-    border-width: 1px;
-    border-radius: 0.25rem;
-    font-size: 1rem;
-    line-height: 1.5;
-}
-

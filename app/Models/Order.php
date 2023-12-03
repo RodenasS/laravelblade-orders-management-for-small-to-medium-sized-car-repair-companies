@@ -25,6 +25,7 @@ class Order extends Model
         'vat',
         'total_inc_vat',
         'description',
+        'sms_notifications',
     ];
 
 

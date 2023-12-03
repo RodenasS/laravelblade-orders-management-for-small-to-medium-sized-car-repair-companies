@@ -67,11 +67,19 @@
     @foreach($companies as $company)
         <body class="h-full ">
         <div class="container px-6 mx-auto">
+
+            <form method="GET" action="{{ route('analytics') }}">
+                <div class="mt-6 flex space-x-4">
+                    <input type="date" id="start_date" name="start_date" class="form-input dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400"
+                           value="{{ request('start_date') }}">
+                    <input type="date" id="end_date" name="end_date" class="form-input dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400"
+                           value="{{ request('end_date') }}">
+                    <button type="submit" class="px-3 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">Filtruoti</button>
+                </div>
+            </form>
+
             <div class="grid gap-6 mb-8 md:grid-cols-2">
-                <!-- Doughnut/Pie chart -->
-                <div
-                    class="mt-6 min-w-0 p-4 text-white bg-purple-600 rounded-lg shadow-xs"
-                >
+                <div class="mt-6 min-w-0 p-4 text-white bg-purple-600 rounded-lg shadow-xs">
                     <h4 class="mb-4 font-semibold">
                         Klientai
                     </h4>
@@ -80,59 +88,54 @@
                     <br> Skaičius klientų, kurie <b>{{$company->name}}</b> paslaugomis naudojosi ne vieną kartą:
                     <b>{{$repeatClients}}.</b>
                 </div>
-                <!-- Lines chart -->
-                <div
-                    class="mt-6 min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-                >
+                <div class="mt-6 min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
                     <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
                         Klientų augimas per paskutiniuosius metus:
                     </h4>
                     <canvas id="line"></canvas>
-                    <div
-                        class="flex justify-center mt-4 space-x-3 text-sm text-gray-600 dark:text-gray-400"
-                    >
-                        <!-- Chart legend -->
+                    <div class="flex justify-center mt-4 space-x-3 text-sm text-gray-600 dark:text-gray-400">
                         <div class="flex items-center">
-                    <span
-                        class="inline-block w-3 h-3 mr-1 bg-teal-500 rounded-full"
-                    ></span>
+                    <span class="inline-block w-3 h-3 mr-1 bg-teal-500 rounded-full"></span>
                             <span>Klientai</span>
                         </div>
                     </div>
                 </div>
-                <!-- Bars chart -->
-                <div
-                    class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-                >
-                    <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
-                        Daugiausiai kartų remontuoti automobiliai, kurių gamintojas:
-                    </h4>
+                <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                    <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Daugiausiai kartų remontuoti automobiliai, kurių gamintojas:</h4>
                     <canvas id="bars"></canvas>
-                    <div
-                        class="flex justify-center mt-4 space-x-3 text-sm text-gray-600 dark:text-gray-400"
-                    >
+                    <div class="flex justify-center mt-4 space-x-3 text-sm text-gray-600 dark:text-gray-400">
                     </div>
                 </div>
                 <div class="grid gap-6 mb-8 container mx-auto md:grid-cols-2">
-                    <div
-                        class="min-w-0 p-4 text-white bg-purple-600 rounded-lg shadow-xs"
-                    >
-                        <h4 class="mb-4 font-semibold">
-                            Automobiliai
-                        </h4>
-                        <p>
-                            Penkios daugiausia kartų <b>{{$company->name}}</b> remontuotos automobilio markės:
-                            <b>{{$commaSeparatedBrands}}.</b></p>
+                    <div class="min-w-0 p-4 text-white bg-purple-600 rounded-lg shadow-xs">
+                        <h4 class="mb-4 font-semibold">Automobiliai</h4>
+                        <p>Penkios daugiausia kartų <b>{{$company->name}}</b> remontuotos automobilio markės:<b>{{$commaSeparatedBrands}}.</b></p>
                         <br> Automobilių, kuriems atliktos paslaugos, ridos vidurkis: <b>{{$averageMileage}} km..</b>
                         </p>
                     </div>
-                    <div
-                        class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-                    >
-                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">
-                            Daugiausiai kartų remontuoti automobiliai:
-                        </h4>
+                    <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Daugiausiai kartų remontuoti automobiliai:</h4>
                         <canvas id="pie"></canvas>
+                    </div>
+                </div>
+                <div class="grid gap-6 mb-8 container mx-auto md:grid-cols-2">
+                    <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                        <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Užsakymų statusų diagrama:</h4>
+                        <canvas id="orderStatusPieChart"></canvas>
+                    </div>
+                    <div class="min-w-0 p-4 text-white bg-purple-600 rounded-lg shadow-xs">
+                        <h4 class="mb-4 font-semibold">Užsakymai</h4>
+                        <p>Vidutinis įmonės <b>{{$company->name}}</b> užsakymo laikas : <b>{{ number_format($averageOrderDuration,2)}} </b> dienos, per <b> {{$totalfilteredOrders}} </b> užsakymus.</p>
+                        <br> Iš šių užsakymų gauta pajamų:
+                        <b>{{ number_format($orderTotals['totalOrdersExVat'], 2) }} € be PVM,
+                            {{ number_format($orderTotals['totalOrdersIncVat'], 2) }} € su PVM.</b>
+                        </p>
+                    </div>
+                </div>
+                <div class="min-w-0 p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+                    <h4 class="mb-4 font-semibold text-gray-800 dark:text-gray-300">Užsakymų grafa (nuo: {{$start_date}} iki {{$end_date}}):</h4>
+                    <canvas id="orderlineConfig"></canvas>
+                    <div class="flex justify-center mt-4 space-x-3 text-sm text-gray-600 dark:text-gray-400">
                     </div>
                 </div>
             </div>
@@ -143,6 +146,10 @@
         var newClientsData = @json($newClientsData);
         var VehiclesData = @json($brandOrders);
         var ModelsData = @json($mostServicedVehicles);
+        var newOrdersData = @json($totalOrdersPastYear);
+
+        var orderStatuses = @json($orderStatusLabels);
+        var orderStatusCounts = @json($orderStatusData);
 
         var top3Brands = VehiclesData.slice(0, 5);
         var top3BrandLabels = top3Brands.map(item => item.brand);
@@ -151,5 +158,8 @@
         var top5BrandModels = ModelsData.slice(0, 5);
         var top5BrandModelLabels = top5BrandModels.map(item => item.brand + ' ' + item.model);
         var top5BrandModelCounts = top5BrandModels.map(item => item.total_orders);
+
+        var orderStatuses = @json($orderStatusLabels);
+        var orderStatusCounts = @json($orderStatusData);
     </script>
 @endsection

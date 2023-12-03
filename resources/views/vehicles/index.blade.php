@@ -98,21 +98,19 @@
                         </form>
                         @unless(count($vehicles) == 0)
                             @foreach ($vehicles as $vehicle)
-                                <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800 ">
+                                <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
                                 <tr class="text-gray-700 dark:text-gray-400">
                                     <td class="px-4 py-3">
-                                        <div class="flex items-center text-sm ">
-                                            <div class="relative hidden w-12 h-8 mr-3 rounded-full md:block">
-                                                @if ($vehicle->brand == 'Audi')
-                                                    <img class="object-cover  rounded-full" src="https://pngimg.com/d/audi_PNG99491.png" alt="Audi" loading="lazy"/>
-                                                @elseif ($vehicle->brand == 'BMW')
-                                                    <img class="object-cover rounded-full" src="https://static.wixstatic.com/media/6324ea_65286e963c6c4b74b79b8c8c0b69d371~mv2.png/v1/fill/w_1100,h_620,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/BMW_COVER.png" alt="BMW" loading="lazy"/>
-                                                @elseif ($vehicle->brand == 'Toyota')
-                                                    <img class="object-cover rounded-full" src="https://purepng.com/public/uploads/large/purepng.com-toyotatoyotamotor-corporationautomotivemanufactureraichimultinational-1701527678483qlu8n.png" alt="BMW" loading="lazy"/>
-                                                @elseif ($vehicle->brand == 'Honda')
-                                                    <img class="object-cover rounded-full" src="https://www.pngmart.com/files/22/Honda-Civic-EG-Hatch-PNG-Isolated-Image.png" alt="BMW" loading="lazy"/>
-                                                @elseif ($vehicle->brand == 'Ford')
-                                                    <img class="object-cover rounded-full" src="https://purepng.com/public/uploads/large/purepng.com-fordfordcarfodr-carvehicle-1701527484256fm2ov.png" alt="BMW" loading="lazy"/>
+                                        <div class="flex items-center text-sm">
+                                            <div class="relative hidden w-12 h-auto mr-3 rounded-full md:block">
+                                                @php
+                                                    $formattedBrand = strtolower(str_replace(' ', '-', $vehicle->brand));
+                                                    $brandLogoPath = 'storage/assets/makes/' . $formattedBrand . '.png';
+                                                @endphp
+                                                @if(file_exists(public_path($brandLogoPath)))
+                                                    <img class="w-12 h-auto " src="{{ asset($brandLogoPath) }}" alt="{{ $vehicle->brand }}" loading="lazy"/>
+                                                @else
+                                                    <img class="w-12 h-auto " src="{{ asset('storage/assets/makes/default.png') }}" alt="Default" loading="lazy"/>
                                                 @endif
                                                 <div class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></div>
                                             </div>
@@ -124,7 +122,7 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm">
                                         <span
-                                            style="font-weight: bold; font-size: 20px; background-image: url('{{ asset('storage/assets/number-plate.png') }}'); background-size: 100%; background-repeat: no-repeat; padding: 0 13px; color: black;">
+                                            style="font-weight: bold; font-size: 20px; background-image: url('{{ asset('storage/assets/number-plate.png') }}'); background-size: contain; background-repeat: no-repeat; padding: 0 18px; color: black;">
                                             {{$vehicle->license_plate}}
                                         </span>
                                     </td>

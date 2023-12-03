@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('company_code')->default('')->nullable();
             $table->string('company_vat_code')->default('')->nullable();
+            $table->string('address')->default('')->nullable();
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->timestamps();

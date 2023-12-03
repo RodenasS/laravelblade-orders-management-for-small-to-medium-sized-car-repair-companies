@@ -9,7 +9,7 @@ class Client extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'company_code', 'company_vat_code' , 'email', 'phone'];
+    protected $fillable = ['name', 'company_code', 'company_vat_code' , 'email', 'phone', 'address'];
 
     public function scopeFilter($query, array $filters)
     {
@@ -19,7 +19,8 @@ class Client extends Model
                     ->orWhere('company_code', 'like', '%' . $filters['search'] . '%')
                     ->orWhere('company_vat_code', 'like', '%' . $filters['search'] . '%')
                     ->orWhere('email', 'like', '%' . $filters['search'] . '%')
-                    ->orWhere('phone', 'like', '%' . $filters['search'] . '%');
+                    ->orWhere('phone', 'like', '%' . $filters['search'] . '%')
+                    ->orWhere('address', 'like', '%' . $filters['search'] . '%');
             });
         }
     }

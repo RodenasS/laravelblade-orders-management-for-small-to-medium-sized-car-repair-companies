@@ -24,6 +24,7 @@ return new class extends Migration
             $table->decimal('vat', 10, 2);
             $table->decimal('total_inc_vat', 10, 2);
             $table->longText('description')->nullable();
+            $table->boolean('sms_notifications')->default(false);
             $table->timestamps();
         });
     }

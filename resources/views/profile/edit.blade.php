@@ -80,15 +80,15 @@
                     alt=""
                     aria-hidden="true"
                 />
+                <label for="remove_profile_picture" class="mt-2 block text-sm">
+                    <span class="text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray">Pakeisti profilio nuotrauką į numatytąją.</span>
+                    <input
+                        type="checkbox"
+                        name="remove_profile_picture"
+                        class="mt-1 text-purple-600 form-checkbox"
+                    />
+                </label>
             </div>
-            <label for="remove_profile_picture" class="mb-4 block text-sm">
-                <span class="text-gray-700 dark:text-gray-400">Remove Profile Picture</span>
-                <input
-                    type="checkbox"
-                    name="remove_profile_picture"
-                    class="mt-1 text-purple-600 form-checkbox"
-                />
-            </label>
             <div class="flex justify-end">
                 <button class="mb-4 px-5 my-6 py-3 font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" role="button" type="submit">
                     Išsaugoti
