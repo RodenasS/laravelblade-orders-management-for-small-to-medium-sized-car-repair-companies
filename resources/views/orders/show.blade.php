@@ -127,7 +127,10 @@
                 @endif
             </div>
         @if($order->sms_notifications)
-                <p class="text-red-600">Pranešimai klientui bus siunčiami kaskart atnaujinus užsakymo būseną!</p>
+                <p class="text-red-600">SMS pranešimai yra įjungti ir klientui bus siunčiami kaskart atnaujinus užsakymo būseną!</p>
+            @endif
+            @if($order->email_notifications)
+                <p class="text-red-600">El. pašto pranešimai yra įjungti ir klientui bus siunčiami kaskart atnaujinus užsakymo būseną!</p>
             @endif
             <div class="mb-4">
                 <span class="text-gray-700 dark:text-gray-400">Papildoma užsakymo informacija: </span>

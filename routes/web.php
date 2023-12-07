@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminpanelController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CompanyInformationController;
 use App\Http\Controllers\CustomResetPasswordController;
@@ -42,6 +43,8 @@ View::share('companyName', $companyName);
 
 // Sidebar
 Route::get('/company-information', [CompanyInformationController::class, 'show'])->name('company-information');
+Route::delete('/company_information/{companyInformation}/delete-logo', [CompanyInformationController::class, 'deleteLogo'])->name('company_information.delete_logo');
+
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/calendar-data', [DashboardController::class, 'calendarData'])->name('calendar.data');
 Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
@@ -57,6 +60,10 @@ Route::put('/users/{id}', [UserController::class, 'update']);
 Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
 Route::get('/user-profile-picture', [UserController::class, 'getUserProfilePicture'])->name('user.profile-picture');
+Route::post('/forgot-password', [UserController::class, 'resetPassword'])->name('users.resetPassword');
+Route::get('/forgot-password', [UserController::class, 'showForgotPasswordForm'])->name('password.reset');
+
+
 
 // Edit user's own profile
 Route::get('/profile/edit', [UserController::class, 'editOwnProfile'])->name('profile.edit');

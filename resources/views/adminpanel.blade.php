@@ -13,14 +13,16 @@
                 </a>
             </div>
             <div class="mb-8 px-4 py-3 mb-2 bg-white rounded-lg shadow-md dark:bg-gray-800">
+                @if($company->logo_path)
                 <div class="mb-4">
                     <img
                         class="object-cover w-auto h-32 rounded-full"
-                        src="{{ asset('storage/logos/logo.png') }}"
+                        src="{{ asset('storage/' . $company->logo_path) }}"
                         alt=""
                         aria-hidden="true"
                     />
                 </div>
+                @endif
                 <div class="mb-4">
                     <span class="text-gray-700 dark:text-gray-400">Įmonės pavadinimas: </span> <br>
                     <h5 class="font-semibold text-gray-700 dark:text-gray-400">{{ $company->name }}</h5>

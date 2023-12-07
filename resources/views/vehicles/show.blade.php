@@ -22,7 +22,7 @@
             <div class="mb-4">
                 <span class="text-gray-700 dark:text-gray-400">VIN kodas: </span>
                 <h5 class="flex font-semibold text-gray-700 dark:text-gray-400">{{ $vehicle->vin }}
-                    <a href="/vindecoder" class="ml-2 flex items-center justify-betweentext-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                    <a href="/vin-decoder" class="ml-2 flex items-center justify-betweentext-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
                        aria-label="Show">
                     Nuskaityti VIN kodą</a>
 
@@ -118,7 +118,7 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                         <span
-                                            style="font-weight: bold; font-size: 20px; background-image: url('{{ asset('storage/assets/number-plate.png') }}'); background-size: contain; background-repeat: no-repeat; padding: 0 18px; color: black;">
+                                            style="font-weight: bold; font-size: 20px; background-image: url('{{ asset('storage/assets/number-plate.png') }}'); background-size: contain; min-width: 110px; max-width: 183px;  background-repeat: no-repeat; padding: 1px 18px; color: black;">
                                             {{$order->vehicle->license_plate}}
                                         </span>
                                 </td>

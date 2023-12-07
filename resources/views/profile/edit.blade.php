@@ -63,6 +63,19 @@
                     @enderror
                 </label>
 
+                <label for="password_confirmation" class="mb-4 block text-sm">
+                    <span class="text-gray-700 dark:text-gray-400">Patvirtinti slaptažodį</span>
+                    <input
+                        type="password"
+                        name="password_confirmation"
+                        class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                        placeholder="Patvirtinti slaptažodį"
+                    />
+                </label>
+                @error('password_confirmation')
+                <p class="text-red-500 text-xs mt-1">{{$message}}</p>
+                @enderror
+
                 <label for="profile_picture" class="mb-4 block text-sm">
                     <span class="text-gray-700 dark:text-gray-400">Profilio nuotrauka</span>
                     <input type="file" name="profile_picture" accept="image/*" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" />

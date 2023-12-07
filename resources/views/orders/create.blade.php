@@ -98,16 +98,6 @@
                 <span class="text-gray-700 dark:text-gray-400">
                   Užsakymo būsena:
                 </span>
-                    <label for="sms_notifications" class="block text-sm">
-                        <input
-                            type="checkbox"
-                            id="sms_notifications"
-                            name="sms_notifications"
-                            class="form-checkbox text-purple-600"
-                            {{ old('sms_notifications') ? 'checked' : '' }}
-                        />
-                        <span class="text-gray-700 dark:text-gray-400">Siųsti SMS pranešimus</span>
-                    </label>
                     <select
                         name="status" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray">
                         <option class="px-2 py-1 font-semibold leading-tight text-orange-700 bg-orange-100 rounded-full dark:text-white dark:bg-orange-600">Vykdomas</option>
@@ -115,7 +105,26 @@
                         <option class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-700">Atšauktas</option>
                     </select>
                 </label>
-
+                <label for="sms_notifications" class="block text-sm">
+                    <input
+                        type="checkbox"
+                        id="sms_notifications"
+                        name="sms_notifications"
+                        class="form-checkbox text-purple-600"
+                        {{ old('sms_notifications') ? 'checked' : '' }}
+                    />
+                    <span class="text-gray-700 dark:text-gray-400">Siųsti SMS pranešimus</span>
+                </label>
+                <label for="email_notifications" class="block text-sm">
+                    <input
+                        type="checkbox"
+                        id="email_notifications"
+                        name="email_notifications"
+                        class="form-checkbox text-purple-600"
+                        {{ old('email_notifications') ? 'checked' : '' }}
+                    />
+                    <span class="text-gray-700 dark:text-gray-400">Siųsti el.pašto pranešimus</span>
+                </label>
                 @error('status')
                 <p class="text-red-500 text-xs mt-1">{{$message}}</p>
                 @enderror
@@ -181,7 +190,7 @@
 <script>
     document.getElementById('add-item').addEventListener('click', function() {
         var container = document.getElementById('order-items');
-        var itemIndex = container.querySelectorAll('tr').length; // Calculate the current index
+        var itemIndex = container.querySelectorAll('tr').length;
 
         var newItem = document.createElement('tr');
         newItem.classList.add('text-gray-700', 'dark:text-gray-400', 'border-hidden');

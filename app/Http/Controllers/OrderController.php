@@ -10,11 +10,12 @@ use App\Models\OrderItem;
 use App\Models\User;
 use App\Models\Vehicle;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Twilio\Rest\Client as TwilioClient;
 
 class OrderController extends Controller
 {
@@ -37,7 +38,7 @@ class OrderController extends Controller
             'ordersLast24Hours' => $this->getLast24HoursCount(),
             'ordersLast7Days' => $this->getLast7DaysCount(),
             'ordersLast31Days' => $this->getLast31DaysCount(),
-        ]) ;
+        ]);
     }
 
     // Display a single order
@@ -61,18 +62,16 @@ class OrderController extends Controller
         $formFields = $request->validate([
             'client_id' => 'nullable|exists:clients,id',
             'vehicle_id' => 'nullable|exists:vehicles,id',
-            'vehicle_mileage' => 'required|integer',
-            'status' => 'required|string', // Include status field
+            'vehicle_mileage' => 'integer',
+            'status' => 'string',
             'estimated_start' => 'date',
             'estimated_end' => 'date',
-            'items' => 'required|array',
-            'items.*.product_code' => 'required',
-            'items.*.product_name' => 'required',
-            'items.*.quantity' => 'required|numeric',
-            'items.*.unit' => 'required',
-            'items.*.unit_price' => 'required|numeric',
-            'images' => 'nullable|array|max:5',
-            'images.*' => 'image',
+            'items' => 'array',
+            'items.*.product_code' => 'string',
+            'items.*.product_name' => 'string',
+            'items.*.quantity' => 'numeric',
+            'items.*.unit' => 'string',
+            'items.*.unit_price' => 'numeric',
             'description' => 'string',
         ]);
 
@@ -94,28 +93,36 @@ class OrderController extends Controller
             $formFields['total_ex_vat'] = $totalExVat;
             $formFields['vat'] = $totalExVat * $vatRate;
             $formFields['total_inc_vat'] = $totalExVat * (1 + $vatRate);
-            $formFields['sms_notifications'] = $request->has('sms_notifications') ? 1 : 0;
-            // Create the order
-            $formFields['user_id'] = auth()->id();
-            $order = Order::create($formFields);
-
-            // Create order items
-            foreach ($formFields['items'] as $itemData) {
-                $order->items()->create($itemData);
-            }
-
-            if ($request->has('images')) {
-                foreach ($request->file('images') as $image) {
-                    $imagePath = $image->store('images', 'public');
-                    $order->images()->create(['path' => $imagePath]);
-                }
-            }
-
-            return redirect('/orders')->with('message', 'Order created successfully!');
         }
+
+        // Create the order
+        $formFields['user_id'] = auth()->id();
+        $order = Order::create($formFields);
+
+        // Create order items
+        foreach ($formFields['items'] as $itemData) {
+            $order->items()->create($itemData);
+        }
+
+        // Update vehicle mileage
+        if (!empty($formFields['vehicle_id'])) {
+            $vehicle = Vehicle::find($formFields['vehicle_id']);
+            if ($vehicle) {
+                $vehicle->update(['mileage' => $formFields['vehicle_mileage']]);
+            }
+        }
+
+        // Handle images
+        if ($request->has('images')) {
+            foreach ($request->file('images') as $image) {
+                $imagePath = $image->store('images', 'public');
+                $order->images()->create(['path' => $imagePath]);
+            }
+        }
+
+        return redirect('/orders')->with('message', 'Order created successfully!');
     }
 
-    // Show form to edit an order
     public function edit(Order $order)
     {
         if (auth()->id() !== $order->user_id && !auth()->user()->isAdmin()) {
@@ -149,7 +156,6 @@ class OrderController extends Controller
             'description' => 'string',
         ]);
 
-        // Calculate totals
         $totalExVat = 0;
         $vatRate = 0.21; // VAT rate
         foreach ($formFields['items'] as &$item) {
@@ -162,43 +168,49 @@ class OrderController extends Controller
         $formFields['vat'] = $totalExVat * $vatRate;
         $formFields['total_inc_vat'] = $totalExVat * (1 + $vatRate);
         $formFields['sms_notifications'] = $request->has('sms_notifications') ? 1 : 0;
+        $formFields['email_notifications'] = $request->has('email_notifications') ? 1 : 0;
         $order->update($formFields);
 
-        // Update order items
-        $order->items()->delete(); // Remove existing items
+        if (!empty($formFields['vehicle_id'])) {
+            $vehicle = Vehicle::find($formFields['vehicle_id']);
+            if ($vehicle) {
+                $vehicle->update(['mileage' => $formFields['vehicle_mileage']]);
+            }
+        }
+
+        $order->items()->delete();
         foreach ($formFields['items'] as $itemData) {
             $order->items()->create($itemData);
         }
 
-
-        // Handle images
         if ($request->has('images')) {
-            $order->images()->delete(); // Remove existing images
+            $order->images()->delete();
             foreach ($request->file('images') as $image) {
                 $imagePath = $image->store('images', 'public');
                 $order->images()->create(['path' => $imagePath]);
             }
         } else {
-            // If no new images were provided, do not delete existing images
             $order->images()->createMany([]);
         }
 
         $removedImageIds = explode(',', $request->input('removedImageIds'));
         foreach ($removedImageIds as $imageId) {
-            // Find the image by ID
-            $image = OrderImage::find($imageId); // Use the correct model here
+            $image = OrderImage::find($imageId);
             if ($image) {
-                $imagePath = $image->path; // Get the image path from the model
+                $imagePath = $image->path;
                 $image->delete();
 
-                // Delete the image from storage
                 Storage::delete('public/' . $imagePath);
             }
         }
+
+        $this->sendOrderStatusDoneEmail($order);
+        $this->sendSmsNotification($order);
+
+
         return back()->with('message', 'Order updated successfully!');
     }
 
-    // Delete an order
     public function destroy(Order $order)
     {
 
@@ -215,21 +227,18 @@ class OrderController extends Controller
         return Order::count();
     }
 
-    // Function to get the count of vehicles added in the last 24 hours
     public function getLast24HoursCount()
     {
         $date = Carbon::now()->subDay();
         return Order::where('created_at', '>=', $date)->count();
     }
 
-    // Function to get the count of vehicles added in the last 7 days
     public function getLast7DaysCount()
     {
         $date = Carbon::now()->subDays(7);
         return Order::where('created_at', '>=', $date)->count();
     }
 
-    // Function to get the count of vehicles added in the last 31 days
     public function getLast31DaysCount()
     {
         $date = Carbon::now()->subDays(31);
@@ -250,7 +259,6 @@ class OrderController extends Controller
     {
         $order->load(['client', 'vehicle', 'items']);
         $invoice_number = substr($order->order_number, 1);
-
         $companyInformation = CompanyInformation::firstOrFail();
         $pdf = new Dompdf();
 
@@ -264,12 +272,103 @@ class OrderController extends Controller
         $options->set('isRemoteEnabled', true);
 
         $pdf->setOptions($options);
-
         $pdf->setPaper('A4', 'portrait');
-
         $pdf->render();
-
         return $pdf->stream('sąskaita faktūra, užsakymo-' . $order->order_number . '.pdf');
+    }
+
+    public function sendOrderStatusDoneEmail(Order $order)
+    {
+        $clientEmail = $order->client->email;
+        $companyInformation = CompanyInformation::first();
+        $client = $order->client;
+
+        if ($order->email_notifications) {
+            $emailSubject = '';
+            $emailView = '';
+
+            if ($order->status === 'Vykdomas') {
+                $emailSubject = 'Jūsų užsakymas yra vykdomas';
+                $emailView = 'emails.order_status_inprogress';
+            } elseif ($order->status === 'Įvykdytas') {
+                $emailSubject = 'Jūsų užsakymas yra įvykdytas';
+                $emailView = 'emails.order_status_done';
+
+                $invoice_number = substr($order->order_number, 1);
+                $pdf = new Dompdf();
+                $html = view('orders.pdf', compact('order', 'companyInformation', 'invoice_number'))->render();
+                $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+                $pdf->loadHtml($html);
+                $pdf->setPaper('A4', 'portrait');
+                $pdf->render();
+                $pdfContent = $pdf->output();
+
+                $pdfFileName = 'sąskaita faktūra, užsakymo-' . $order->order_number . '.pdf';
+                $emailAttachments = [
+                    [
+                        'data' => $pdfContent,
+                        'filename' => $pdfFileName,
+                    ],
+                ];
+
+                Mail::send($emailView, [
+                    'order' => $order,
+                    'client' => $client,
+                    'companyInformation' => $companyInformation,
+                ], function ($message) use ($clientEmail, $emailSubject, $emailAttachments) {
+                    $message->to($clientEmail)
+                        ->subject($emailSubject)
+                        ->from(config('mail.from.address'), config('mail.from.name'))
+                        ->attachData($emailAttachments[0]['data'], $emailAttachments[0]['filename']);
+                });
+                return;
+            }
+            elseif ($order->status === 'Atšauktas') {
+                $emailSubject = 'Jūsų užsakymas yra atšauktas';
+                $emailView = 'emails.order_status_cancelled';
+            }
+
+            if (!empty($emailView)) {
+                Mail::send($emailView, [
+                    'order' => $order,
+                    'client' => $client,
+                    'companyInformation' => $companyInformation,
+                ], function ($message) use ($clientEmail, $emailSubject) {
+                    $message->to($clientEmail)
+                        ->subject($emailSubject)
+                        ->from(config('mail.from.address'), config('mail.from.name'));
+                });
+            }
+        }
+    }
+
+    public function sendSmsNotification(Order $order)
+    {
+        if ($order->sms_notifications) {
+            $clientPhoneNumber = $order->client->phone;
+
+            $twilioSid = 'AC9b437f47ffa49658c28bdb09304bbf6b';
+            $twilioAuthToken = '88f0c56ff8d12ac848adbc3c447eb12b';
+            $twilio = new TwilioClient($twilioSid, $twilioAuthToken);
+            $twilioPhoneNumber = '+15414035168';
+            $companyInformation = CompanyInformation::first();
+
+            $smsText = "Sveiki, {$order->client->name},\n\nNorime jums pranešti, jog jūsų užsakymo {$order->order_number} būsena buvo atnaujinta į {$order->status}.\nDėl detalesnės informacijos galite kreiptis telefono numeriu: {$companyInformation->phone_number}.\n\nAčiū, jog renkatės mūsų paslaugas!\nJūsų, {$companyInformation->name}.\n{$companyInformation->address}";
+
+            try {
+                $twilio->messages->create(
+                    $clientPhoneNumber,
+                    [
+                        'from' => $twilioPhoneNumber,
+                        'body' => $smsText,
+                    ]
+                );
+
+                return response()->json(['message' => 'SMS sėkmingai išsiųstas klientui.']);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Klaida siunčiant SMS klientui: ' . $e->getMessage()], 500);
+            }
+        }
     }
 }
 

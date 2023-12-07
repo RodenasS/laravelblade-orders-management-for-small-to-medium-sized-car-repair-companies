@@ -8,6 +8,11 @@
         border-radius: 0.25rem;
         height: 39px;
 }
+.fc-daygrid-block-event .fc-event-time, .fc-daygrid-block-event .fc-event-title {
+    padding: 1px;
+    color: #ededed
+}
+
 .theme-dark .select2-container--default .select2-selection--single {
     --bg-opacity: 1;
     background-color: #24262d;

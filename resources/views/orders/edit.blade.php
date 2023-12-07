@@ -20,7 +20,7 @@
                     @endforeach
                     </select>
             </label>
-            <!-- Vehicle Selection -->
+
             <label for="vehicle_id" class="mb-4 block text-sm">
                 <span class="text-gray-700 dark:text-gray-400">Automobilis:</span>
                 <select name="vehicle_id" id="vehicle_id"
@@ -69,7 +69,8 @@
             <span class="text-gray-700 dark:text-gray-400">
                 Užsakymo būsena:
             </span>
-                <select name="status" class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray">
+                <select name="status"
+                        class="block w-full mt-1 text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-select focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray">
                     @foreach(['Vykdomas', 'Įvykdytas', 'Atšauktas'] as $statusOption)
                         <option
                             value="{{ $statusOption }}"
@@ -90,12 +91,26 @@
                     id="sms_notifications"
                     name="sms_notifications"
                     class="form-checkbox text-purple-600"
-                {{ $order->sms_notifications ? 'checked' : '' }}
+                    {{ $order->sms_notifications ? 'checked' : '' }}
                 />
                 <span class="text-gray-700 dark:text-gray-400">Siųsti SMS pranešimus</span>
-                <p id="smsNotificationMessage" class="text-red-600" style="display: {{ $order->sms_notifications ? 'block' : 'none' }}">Pranešimai klientui bus siunčiami kaskart atnaujinus užsakymo būseną!</p>
+                <p id="smsNotificationMessage" class="text-red-600"
+                   style="display: {{ $order->sms_notifications ? 'block' : 'none' }}">SMS pranešimai klientui bus
+                    siunčiami kaskart atnaujinus užsakymo būseną!</p>
             </label>
-
+            <label for="email_notifications" class="block text-sm">
+                <input
+                    type="checkbox"
+                    id="email_notifications"
+                    name="email_notifications"
+                    class="form-checkbox text-purple-600"
+                    {{ $order->email_notifications ? 'checked' : '' }}
+                />
+                <span class="text-gray-700 dark:text-gray-400">Siųsti el.pašto pranešimus</span>
+                <p id="emailNotificationMessage" class="text-red-600"
+                   style="display: {{ $order->email_notifications ? 'block' : 'none' }}">EL. pašto pranešimai klientui
+                    bus siunčiami kaskart atnaujinus užsakymo būseną!</p>
+            </label>
             <div class="mt-16 mb-4 flex justify-between items-center">
                 <h4
                     class="mb-2 mt-6 text-lg font-semibold text-gray-600 dark:text-gray-300">Prekių bei paslaugų
@@ -126,26 +141,31 @@
                             <tr>
                                 <td class="px-4 py-3">
                                     <input type="text" name="items[{{ $index }}][product_code]"
-                                           value="{{ $item->product_code }}" class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                           value="{{ $item->product_code }}"
+                                           class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
                                            placeholder="Kodas">
                                 </td>
                                 <td class="px-4 py-3">
                                     <input type="text" name="items[{{ $index }}][product_name]"
-                                           value="{{ $item->product_name }}" class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                           value="{{ $item->product_name }}"
+                                           class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
                                            placeholder="Pavadinimas">
                                 </td>
                                 <td class="px-4 py-3">
                                     <input type="number" name="items[{{ $index }}][quantity]"
-                                           value="{{ $item->quantity }}" class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                           value="{{ $item->quantity }}"
+                                           class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
                                            placeholder="Kiekis">
                                 </td>
                                 <td class="px-4 py-3">
                                     <input type="text" name="items[{{ $index }}][unit]" value="{{ $item->unit }}"
-                                           class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700" placeholder="Vienetai">
+                                           class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                           placeholder="Vienetai">
                                 </td>
                                 <td class="px-4 py-3">
                                     <input type="text" name="items[{{ $index }}][unit_price]"
-                                           value="{{ $item->unit_price }}" class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                                           value="{{ $item->unit_price }}"
+                                           class="form-input block w-full dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700"
                                            placeholder="Kaina">
                                 </td>
                                 <td class="px-4 py-3">
@@ -181,7 +201,9 @@
 
             <h4 class="mb-2 mt-8 text-lg font-semibold text-gray-600 dark:text-gray-300">Nuotraukų įkėlimas</h4>
             <!-- File Input Field -->
-            <input type="file" name="images[]" id="imageUpload" class="text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" multiple>
+            <input type="file" name="images[]" id="imageUpload"
+                   class="text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
+                   multiple>
 
             <!-- Container for Existing Image Previews -->
             <input type="hidden" name="removedImageIds" id="removedImageIds" value="">
@@ -318,15 +340,26 @@
             }
         });
 
-            const smsNotificationsCheckbox = document.getElementById('sms_notifications');
-            const smsNotificationMessage = document.getElementById('smsNotificationMessage');
+        const smsNotificationsCheckbox = document.getElementById('sms_notifications');
+        const smsNotificationMessage = document.getElementById('smsNotificationMessage');
 
-            smsNotificationsCheckbox.addEventListener('change', function () {
+        smsNotificationsCheckbox.addEventListener('change', function () {
             if (this.checked) {
-            smsNotificationMessage.style.display = 'block';
-        } else {
-            smsNotificationMessage.style.display = 'none';
-        }
+                smsNotificationMessage.style.display = 'block';
+            } else {
+                smsNotificationMessage.style.display = 'none';
+            }
+        });
+
+        const emailNotificationsCheckbox = document.getElementById('email_notifications');
+        const emailNotificationMessage = document.getElementById('emailNotificationMessage');
+
+        emailNotificationsCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                emailNotificationMessage.style.display = 'block';
+            } else {
+                emailNotificationMessage.style.display = 'none';
+            }
         });
 
     </script>

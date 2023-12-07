@@ -14,11 +14,9 @@ class OrderFactory extends Factory
     protected $model = Order::class;
 
     public function definition() {
-        $year = now()->year; // Current year
-        // Generate a random start date within this year
+        $year = now()->year;
         $estimated_start = $this->faker->dateTimeBetween("$year-01-01", "$year-12-31");
 
-        // Generate an end date that's within 2 days after the start date
         $estimated_end = $this->faker->dateTimeBetween($estimated_start, $estimated_start->format('Y-m-d') . ' +2 days');
 
         $user = User::factory()->create();

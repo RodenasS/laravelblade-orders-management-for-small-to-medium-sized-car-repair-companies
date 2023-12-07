@@ -86,9 +86,11 @@
     </style>
 </head>
 <body>
-<div class="header-logo">
-    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(storage_path('app/public/logos/logo.png'))) }}" class="header-logo" alt="Company Logo">
-</div>
+@if($companyInformation->logo_path)
+    <div class="header-logo">
+        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(storage_path('app/public/' . $companyInformation->logo_path))) }}" class="header-logo" alt="">
+    </div>
+@endif
 <div class="invoice-container">
     <div class="header">
         <h2>PVM SĄSKAITA FAKTŪRA</h2>

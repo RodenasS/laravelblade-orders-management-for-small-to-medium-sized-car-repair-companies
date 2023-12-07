@@ -124,7 +124,7 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm">
                                         <span
-                                            style="font-weight: bold; font-size: 20px; background-image: url('{{ asset('storage/assets/number-plate.png') }}'); background-size: 100%; background-repeat: no-repeat; padding: 0 13px; color: black;">
+                                            style="font-weight: bold; font-size: 20px; background-image: url('{{ asset('storage/assets/number-plate.png') }}'); background-size: contain; min-width: 110px; max-width: 183px;  background-repeat: no-repeat; padding: 1px 18px; color: black;">
                                             {{$order->vehicle->license_plate}}
                                         </span>
                                     </td>

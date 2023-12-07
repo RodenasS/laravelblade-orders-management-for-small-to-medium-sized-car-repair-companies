@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CompanyInformation;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -15,12 +18,9 @@ class UserController extends Controller
 
         return view('users.index', ['users' => $users]);
     }
-
-    // Show register/create form
     public function create() {
         return view('users.register');
     }
-    // Create new user
     public function store(Request $request) {
         $formFields = $request->validate([
             'name' => ['required', 'min:3'],
@@ -28,19 +28,12 @@ class UserController extends Controller
             'password' => 'required|confirmed|min:6',
             'role' => 'string',
         ]);
-        // HASH Password
-       // $formFields['password'] = bcrypt($formFields['password']);
-
-        //Create User
+        $formFields['password'] = bcrypt($formFields['password']);
         $user = User::create($formFields);
-
-        // Login
         auth()->login($user);
-
         return redirect('/')->with('message','User created and logged in!');
     }
 
-    // Logout
     public function logout(Request $request) {
         auth()->logout();
 
@@ -50,7 +43,6 @@ class UserController extends Controller
         return redirect('/')->with('message',' You have been logged out!');
     }
 
-    // Show login form
     public function login() {
         return view('users.login');
     }
@@ -64,7 +56,6 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        // Check if the logged-in user is an admin or is editing their own profile
         if (auth()->user()->isAdmin() || auth()->user()->id === $user->id) {
             $rules = [
                 'name' => ['required', 'min:3'],
@@ -73,22 +64,28 @@ class UserController extends Controller
                 'profile_picture' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust the allowed file types and size
             ];
 
+            if ($request->filled('password')) {
+                $rules['password'] = 'required|confirmed|min:6';
+            }
+
             $formFields = $request->validate($rules);
 
+            if ($request->filled('password')) {
+                $formFields['password'] = Hash::make($formFields['password']);
+            } else {
+                unset($formFields['password']);
+            }
+
             if ($request->hasFile('profile_picture')) {
-                // Handle profile picture update
                 $uploadedFile = $request->file('profile_picture');
                 $path = $uploadedFile->store('profile_pictures', 'public'); // Adjust the storage path as needed
                 $formFields['profile_picture'] = $path;
             } elseif ($request->has('remove_profile_picture')) {
-                // Handle profile picture removal
                 $formFields['profile_picture'] = null;
             }
 
-            // Update user data
             $user->update($formFields);
 
-            // Check if the updated user is the authenticated user
             if ($user->id === auth()->user()->id) {
                 return redirect()->route('profile.edit')->with('message', 'Profile updated successfully!');
             } else {
@@ -99,8 +96,6 @@ class UserController extends Controller
         }
     }
 
-
-    // Show user details
     public function show($id)
     {
         $user = User::findOrFail($id);
@@ -113,7 +108,6 @@ class UserController extends Controller
         return view('profile.edit', compact('user'));
     }
 
-    // Delete user
     public function destroy($id)
     {
         $user = User::findOrFail($id);
@@ -129,14 +123,12 @@ class UserController extends Controller
         if ($user && $user->profile_picture) {
             $profilePictureUrl = asset('storage/' . $user->profile_picture);
         } else {
-            // Use the default profile picture URL if the user has no picture
             $profilePictureUrl = $defaultProfilePicture;
         }
 
         return response()->json(['profile_picture_url' => $profilePictureUrl]);
     }
 
-    // Authenticate user
     public function authenticate(Request $request) {
         $formFields = $request->validate([
             'email' => ['required', 'email'],
@@ -150,4 +142,35 @@ class UserController extends Controller
         return back()->withErrors(['email' => 'Invalid Credentials'])->onlyInput('email');
     }
 
+    public function showForgotPasswordForm()
+    {
+        return view('users.email');
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        $newPassword = Str::random(10);
+
+        $user = User::where('email', $request->email)->first();
+        $user->password = Hash::make($newPassword);
+        $user->save();
+        $companyInformation = CompanyInformation::first();
+
+        Mail::send('emails.password_reset', [
+            'user' => $user,
+            'newPassword' => $newPassword,
+            'companyInformation' => $companyInformation,
+        ], function ($message) use ($user) {
+            $message->to($user->email)
+                ->subject('Slaptažodžio atstatymas')
+                ->from(config('mail.from.address'), config('mail.from.name'));
+        });
+
+
+        return redirect('/login')->with('success', 'Your password has been reset. Check your email for the new password.');
+    }
 }

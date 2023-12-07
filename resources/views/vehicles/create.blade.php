@@ -37,19 +37,6 @@
                     <p class="text-red-500 text-xs mt-1">{{$message}}</p>
                     @enderror
 
-                    <label for="mileage" class="mb-4 block text-sm">
-                        <span class="text-gray-700 dark:text-gray-400">Kilometražas</span>
-                        <input
-                            name="mileage"
-                            class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                            placeholder="55461"
-                            value="{{old('mileage')}}"
-                        />
-                    </label>
-                    @error('mileage')
-                    <p class="text-red-500 text-xs mt-1">{{$message}}</p>
-                    @enderror
-
                     <label for="first_registration" class="mb-4 block text-sm">
                         <span class="text-gray-700 dark:text-gray-400">Pirmosios registracijos data:</span>
                         <input

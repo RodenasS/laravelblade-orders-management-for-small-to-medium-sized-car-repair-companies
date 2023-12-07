@@ -12,6 +12,31 @@
             <div
                 class="px-4 py-3 mb-2 bg-white rounded-lg shadow-md dark:bg-gray-800"
             >
+                <!-- Existing Logo -->
+                @if ($company->logo_path)
+                <div class="mb-4">
+                    <img src="{{ asset('storage/' . $company->logo_path) }}" alt="{{ $company->name }} Logo" class="object-cover w-auto h-32 rounded-full">
+                        <button
+                            type="button"
+                            class="mt-2 text-red-500 text-sm hover:underline focus:outline-none"
+                            onclick="confirm('Ar tikrai norite pašalinti logotipą?') ? document.getElementById('logo_delete').submit() : null"
+                        >
+                            Ištrinti logotipą
+                        </button>
+                </div>
+                @endif
+                <!-- Logo Upload Field -->
+                <label for="logo" class="block text-sm text-gray-700 dark:text-gray-400">Pakeisti logotipą</label>
+                <input
+                    type="file"
+                    name="logo"
+                    accept="image/*"
+                    class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
+                />
+                @error('logo')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+
                 <label for="name" class="mb-4 block text-sm">
                     <span class="text-gray-700 dark:text-gray-400">Pavadinimas</span>
                     <input
@@ -135,6 +160,16 @@
                 </button>
             </div>
         </form>
+        <form
+            id="logo_delete"
+            method="POST"
+            action="{{ route('company_information.delete_logo', $company->id) }}"
+            style="display: none;"
+        >
+            @csrf
+            @method('DELETE')
+        </form>
+
     </div>
     </body>
 @endsection
