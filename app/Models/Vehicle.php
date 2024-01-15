@@ -33,12 +33,10 @@ class Vehicle extends Model
         }
     }
 
-    // Relationship to Client
     public function client() {
         return $this->belongsTo(Client::class, 'client_id');
     }
 
-    // Relationship to Orders
     public function orders() {
         return $this->hasMany(Order::class);
     }

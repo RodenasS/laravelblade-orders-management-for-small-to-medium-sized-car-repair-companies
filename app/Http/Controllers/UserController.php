@@ -12,6 +12,10 @@ use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->only(['edit', 'update', 'destroy', 'logout', 'editOwnProfile']);
+    }
     public function index()
     {
         $users = User::latest()->paginate(12);
@@ -40,7 +44,7 @@ class UserController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/')->with('message',' You have been logged out!');
+        return redirect('/')->with('message',' Jūs sėkmingai atsijungėte iš savo paskyros!');
     }
 
     public function login() {
@@ -61,7 +65,7 @@ class UserController extends Controller
                 'name' => ['required', 'min:3'],
                 'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
                 'role' => 'string',
-                'profile_picture' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust the allowed file types and size
+                'profile_picture' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             ];
 
             if ($request->filled('password')) {
@@ -78,7 +82,7 @@ class UserController extends Controller
 
             if ($request->hasFile('profile_picture')) {
                 $uploadedFile = $request->file('profile_picture');
-                $path = $uploadedFile->store('profile_pictures', 'public'); // Adjust the storage path as needed
+                $path = $uploadedFile->store('profile_pictures', 'public');
                 $formFields['profile_picture'] = $path;
             } elseif ($request->has('remove_profile_picture')) {
                 $formFields['profile_picture'] = null;
@@ -87,12 +91,12 @@ class UserController extends Controller
             $user->update($formFields);
 
             if ($user->id === auth()->user()->id) {
-                return redirect()->route('profile.edit')->with('message', 'Profile updated successfully!');
+                return redirect()->route('profile.edit')->with('message', 'Profilis buvo sėkmingai atnaujintas!');
             } else {
-                return redirect('/adminpanel')->with('message', 'Profile updated successfully for another user!');
+                return redirect('/adminpanel')->with('message', 'Sėkmingai atnaujinote vartotojo informaciją!');
             }
         } else {
-            return redirect('/')->with('error', 'You are not authorized to update this profile.');
+            return redirect('/')->with('error', 'Jūs neturite prieigos redaguoti šio naudotojo profilio');
         }
     }
 
@@ -113,7 +117,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return redirect('/adminpanel')->with('message', 'User deleted successfully!');
+        return redirect('/adminpanel')->with('message', 'Sėkmingai ištrynėte vartotojo profilį!');
     }
     public function getUserProfilePicture()
     {
@@ -125,41 +129,33 @@ class UserController extends Controller
         } else {
             $profilePictureUrl = $defaultProfilePicture;
         }
-
         return response()->json(['profile_picture_url' => $profilePictureUrl]);
     }
-
     public function authenticate(Request $request) {
         $formFields = $request->validate([
             'email' => ['required', 'email'],
             'password' => 'required'
         ]);
-
         if(auth()->attempt($formFields)) {
             $request->session()->regenerate();
-            return redirect('/')->with('message','You are now logged in!');
+            return redirect('/')->with('message','Sėkmingai prisijungėte prie savo paskyros!');
         };
         return back()->withErrors(['email' => 'Invalid Credentials'])->onlyInput('email');
     }
-
     public function showForgotPasswordForm()
     {
         return view('users.email');
     }
-
     public function resetPassword(Request $request)
     {
         $request->validate([
             'email' => 'required|email|exists:users,email',
         ]);
-
         $newPassword = Str::random(10);
-
         $user = User::where('email', $request->email)->first();
         $user->password = Hash::make($newPassword);
         $user->save();
         $companyInformation = CompanyInformation::first();
-
         Mail::send('emails.password_reset', [
             'user' => $user,
             'newPassword' => $newPassword,
@@ -169,8 +165,6 @@ class UserController extends Controller
                 ->subject('Slaptažodžio atstatymas')
                 ->from(config('mail.from.address'), config('mail.from.name'));
         });
-
-
-        return redirect('/login')->with('success', 'Your password has been reset. Check your email for the new password.');
+        return redirect('/login')->with('success', 'Jūsų slaptažodis sėkmingai atstatytas, pasitikrinkite savo el. paštą!');
     }
 }

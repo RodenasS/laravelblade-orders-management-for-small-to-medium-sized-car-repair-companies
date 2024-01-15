@@ -31,6 +31,4 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Order::class);
     }
-
-    // Add any other necessary methods or relationships
 }

@@ -19,20 +19,19 @@ use Twilio\Rest\Client as TwilioClient;
 
 class OrderController extends Controller
 {
-// Show all orders
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function index(Request $request)
     {
         $query = Order::latest();
-
         $start_date = $request->start_date ?? Carbon::yesterday()->format('Y-m-d');
         $end_date = $request->end_date ?? Carbon::tomorrow()->format('Y-m-d');
-
         if ($request->has('start_date') && $request->has('end_date')) {
             $query->whereBetween('created_at', [$request->start_date, $request->end_date]);
         }
-
         $orders = $query->paginate(12);
-
         return view('orders.index', compact('orders', 'start_date', 'end_date'), [
             'totalOrders' => $this->getTotalOrdersCount(),
             'ordersLast24Hours' => $this->getLast24HoursCount(),
@@ -40,23 +39,17 @@ class OrderController extends Controller
             'ordersLast31Days' => $this->getLast31DaysCount(),
         ]);
     }
-
-    // Display a single order
     public function show(Order $order)
     {
         $order->load(['client', 'vehicle', 'items']);
         return view('orders.show', compact('order'));
     }
-
-    // Show form to create a new order
     public function create()
     {
         $clients = Client::all();
         $vehicles = Vehicle::all();
         return view('orders.create', compact('clients', 'vehicles'));
     }
-
-    // Store a new order
     public function store(Request $request)
     {
         $formFields = $request->validate([
@@ -74,55 +67,40 @@ class OrderController extends Controller
             'items.*.unit_price' => 'numeric',
             'description' => 'string',
         ]);
-
-        // Additional fields for the order
-        $formFields['date'] = now(); // Set the current date
-
-        // Calculate totals
+        $formFields['date'] = now();
         $totalExVat = 0;
-        $vatRate = 0.21; // VAT rate
+        $vatRate = 0.21;
         $formFields['items'] = $formFields['items'] ?? [];
-
         if (is_array($formFields['items']) && count($formFields['items']) > 0) {
             foreach ($formFields['items'] as &$item) {
                 $item['total_ex_vat'] = $item['unit_price'] * $item['quantity'];
                 $item['total_inc_vat'] = $item['total_ex_vat'] * (1 + $vatRate);
                 $totalExVat += $item['total_ex_vat'];
             }
-
             $formFields['total_ex_vat'] = $totalExVat;
             $formFields['vat'] = $totalExVat * $vatRate;
             $formFields['total_inc_vat'] = $totalExVat * (1 + $vatRate);
         }
-
-        // Create the order
         $formFields['user_id'] = auth()->id();
         $order = Order::create($formFields);
-
-        // Create order items
         foreach ($formFields['items'] as $itemData) {
             $order->items()->create($itemData);
         }
-
-        // Update vehicle mileage
         if (!empty($formFields['vehicle_id'])) {
             $vehicle = Vehicle::find($formFields['vehicle_id']);
             if ($vehicle) {
                 $vehicle->update(['mileage' => $formFields['vehicle_mileage']]);
             }
         }
-
-        // Handle images
         if ($request->has('images')) {
             foreach ($request->file('images') as $image) {
                 $imagePath = $image->store('images', 'public');
                 $order->images()->create(['path' => $imagePath]);
             }
         }
-
-        return redirect('/orders')->with('message', 'Order created successfully!');
+        $orderNumber = $order->order_number;
+        return redirect('/orders')->with('message', "Sėkmingai sukūrėte <strong>$orderNumber</strong> užsakymą!");
     }
-
     public function edit(Order $order)
     {
         if (auth()->id() !== $order->user_id && !auth()->user()->isAdmin()) {
@@ -134,8 +112,6 @@ class OrderController extends Controller
         $vehicles = Vehicle::all();
         return view('orders.edit', compact('order', 'clients', 'vehicles'));
     }
-
-    // Update the order
     public function update(Request $request, Order $order)
     {
         $formFields = $request->validate([
@@ -145,17 +121,16 @@ class OrderController extends Controller
             'status' => 'required|string',
             'estimated_start' => 'date',
             'estimated_end' => 'date',
-            'items' => 'required|array',
-            'items.*.product_code' => 'required',
-            'items.*.product_name' => 'required',
-            'items.*.quantity' => 'required|numeric',
-            'items.*.unit' => 'required',
-            'items.*.unit_price' => 'required|numeric',
+            'items' => 'array',
+            'items.*.product_code' => '',
+            'items.*.product_name' => '',
+            'items.*.quantity' => 'numeric',
+            'items.*.unit' => '',
+            'items.*.unit_price' => '|numeric',
             'images' => 'nullable|array|max:5',
             'images.*' => 'image',
             'description' => 'string',
         ]);
-
         $totalExVat = 0;
         $vatRate = 0.21; // VAT rate
         foreach ($formFields['items'] as &$item) {
@@ -163,26 +138,22 @@ class OrderController extends Controller
             $item['total_inc_vat'] = $item['total_ex_vat'] * (1 + $vatRate);
             $totalExVat += $item['total_ex_vat'];
         }
-
         $formFields['total_ex_vat'] = $totalExVat;
         $formFields['vat'] = $totalExVat * $vatRate;
         $formFields['total_inc_vat'] = $totalExVat * (1 + $vatRate);
         $formFields['sms_notifications'] = $request->has('sms_notifications') ? 1 : 0;
         $formFields['email_notifications'] = $request->has('email_notifications') ? 1 : 0;
         $order->update($formFields);
-
         if (!empty($formFields['vehicle_id'])) {
             $vehicle = Vehicle::find($formFields['vehicle_id']);
             if ($vehicle) {
                 $vehicle->update(['mileage' => $formFields['vehicle_mileage']]);
             }
         }
-
         $order->items()->delete();
         foreach ($formFields['items'] as $itemData) {
             $order->items()->create($itemData);
         }
-
         if ($request->has('images')) {
             $order->images()->delete();
             foreach ($request->file('images') as $image) {
@@ -192,7 +163,6 @@ class OrderController extends Controller
         } else {
             $order->images()->createMany([]);
         }
-
         $removedImageIds = explode(',', $request->input('removedImageIds'));
         foreach ($removedImageIds as $imageId) {
             $image = OrderImage::find($imageId);
@@ -203,56 +173,38 @@ class OrderController extends Controller
                 Storage::delete('public/' . $imagePath);
             }
         }
-
         $this->sendOrderStatusDoneEmail($order);
         $this->sendSmsNotification($order);
-
-
-        return back()->with('message', 'Order updated successfully!');
+        $orderNumber = $order->order_number;
+        return redirect('/orders')->with('message', "Sėkmingai atnaujinote <strong>$orderNumber</strong> užsakymo informaciją!");
     }
-
     public function destroy(Order $order)
     {
-
         if (auth()->id() !== $order->user_id && !auth()->user()->isAdmin()) {
             abort(403, 'Unauthorized action.');
         }
-
         $order->delete();
-        return redirect('/orders')->with('message', 'Order deleted successfully!');
+        $orderNumber = $order->order_number;
+        return redirect('/orders')->with('message', "Sėkmingai ištrynėte <strong>$orderNumber</strong> užsakymą!");
     }
-
     public function getTotalOrdersCount()
     {
         return Order::count();
     }
-
     public function getLast24HoursCount()
     {
         $date = Carbon::now()->subDay();
         return Order::where('created_at', '>=', $date)->count();
     }
-
     public function getLast7DaysCount()
     {
         $date = Carbon::now()->subDays(7);
         return Order::where('created_at', '>=', $date)->count();
     }
-
     public function getLast31DaysCount()
     {
         $date = Carbon::now()->subDays(31);
         return Order::where('created_at', '>=', $date)->count();
-    }
-
-    public function items()
-    {
-        return $this->hasMany(OrderItem::class);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
     }
 
     public function generatePDF(Order $order)
@@ -276,24 +228,20 @@ class OrderController extends Controller
         $pdf->render();
         return $pdf->stream('sąskaita faktūra, užsakymo-' . $order->order_number . '.pdf');
     }
-
     public function sendOrderStatusDoneEmail(Order $order)
     {
         $clientEmail = $order->client->email;
         $companyInformation = CompanyInformation::first();
         $client = $order->client;
-
         if ($order->email_notifications) {
             $emailSubject = '';
             $emailView = '';
-
             if ($order->status === 'Vykdomas') {
                 $emailSubject = 'Jūsų užsakymas yra vykdomas';
                 $emailView = 'emails.order_status_inprogress';
             } elseif ($order->status === 'Įvykdytas') {
                 $emailSubject = 'Jūsų užsakymas yra įvykdytas';
                 $emailView = 'emails.order_status_done';
-
                 $invoice_number = substr($order->order_number, 1);
                 $pdf = new Dompdf();
                 $html = view('orders.pdf', compact('order', 'companyInformation', 'invoice_number'))->render();
@@ -302,7 +250,6 @@ class OrderController extends Controller
                 $pdf->setPaper('A4', 'portrait');
                 $pdf->render();
                 $pdfContent = $pdf->output();
-
                 $pdfFileName = 'sąskaita faktūra, užsakymo-' . $order->order_number . '.pdf';
                 $emailAttachments = [
                     [
@@ -310,7 +257,6 @@ class OrderController extends Controller
                         'filename' => $pdfFileName,
                     ],
                 ];
-
                 Mail::send($emailView, [
                     'order' => $order,
                     'client' => $client,
@@ -341,7 +287,6 @@ class OrderController extends Controller
             }
         }
     }
-
     public function sendSmsNotification(Order $order)
     {
         if ($order->sms_notifications) {
@@ -352,9 +297,7 @@ class OrderController extends Controller
             $twilio = new TwilioClient($twilioSid, $twilioAuthToken);
             $twilioPhoneNumber = '+15414035168';
             $companyInformation = CompanyInformation::first();
-
             $smsText = "Sveiki, {$order->client->name},\n\nNorime jums pranešti, jog jūsų užsakymo {$order->order_number} būsena buvo atnaujinta į {$order->status}.\nDėl detalesnės informacijos galite kreiptis telefono numeriu: {$companyInformation->phone_number}.\n\nAčiū, jog renkatės mūsų paslaugas!\nJūsų, {$companyInformation->name}.\n{$companyInformation->address}";
-
             try {
                 $twilio->messages->create(
                     $clientPhoneNumber,
@@ -363,7 +306,6 @@ class OrderController extends Controller
                         'body' => $smsText,
                     ]
                 );
-
                 return response()->json(['message' => 'SMS sėkmingai išsiųstas klientui.']);
             } catch (\Exception $e) {
                 return response()->json(['error' => 'Klaida siunčiant SMS klientui: ' . $e->getMessage()], 500);

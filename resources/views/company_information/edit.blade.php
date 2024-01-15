@@ -12,7 +12,6 @@
             <div
                 class="px-4 py-3 mb-2 bg-white rounded-lg shadow-md dark:bg-gray-800"
             >
-                <!-- Existing Logo -->
                 @if ($company->logo_path)
                 <div class="mb-4">
                     <img src="{{ asset('storage/' . $company->logo_path) }}" alt="{{ $company->name }} Logo" class="object-cover w-auto h-32 rounded-full">
@@ -25,7 +24,6 @@
                         </button>
                 </div>
                 @endif
-                <!-- Logo Upload Field -->
                 <label for="logo" class="block text-sm text-gray-700 dark:text-gray-400">Pakeisti logotipą</label>
                 <input
                     type="file"

@@ -9,7 +9,11 @@ use Illuminate\Http\Request;
 
 class VehicleController extends Controller
 {
-    // Display a listing of vehicles
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index(Request $request)
     {
         $query = Vehicle::query();
@@ -46,15 +50,12 @@ class VehicleController extends Controller
         ]);
     }
 
-
-    // Show the form for creating a new vehicle
     public function create()
     {
-        $clients = Client::all(); // Fetch all clients
+        $clients = Client::all();
         return view('vehicles.create', compact('clients'));
     }
 
-    // Store a newly created vehicle in storage
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -67,11 +68,11 @@ class VehicleController extends Controller
             'vin' => 'required|unique:vehicles'
         ]);
 
-        Vehicle::create($validatedData);
-        return redirect()->route('vehicles.index')->with('success', 'Vehicle created successfully.');
+        $vehicle = Vehicle::create($validatedData);
+        $licensePlate = $vehicle->license_plate;
+        return redirect()->route('vehicles.index')->with('message', "Sėkmingai pridėjote automobilio <strong>$licensePlate</strong> informaciją!");
     }
 
-    // Display the specified vehicle
     public function show(Vehicle $vehicle)
     {
         $clients = Client::all();
@@ -79,14 +80,12 @@ class VehicleController extends Controller
         return view('vehicles.show', compact('vehicle', 'clients', 'orders'));
     }
 
-    // Show the form for editing the specified vehicle
     public function edit(Vehicle $vehicle)
     {
-        $clients = Client::all(); // Assuming you have a Client model
+        $clients = Client::all();
         return view('vehicles.edit', compact('vehicle', 'clients'));
     }
 
-    // Update the specified vehicle in storage
     public function update(Request $request, Vehicle $vehicle)
     {
         $validatedData = $request->validate([
@@ -101,14 +100,15 @@ class VehicleController extends Controller
         ]);
 
         $vehicle->update($validatedData);
-        return redirect()->route('vehicles.index')->with('success', 'Vehicle updated successfully.');
+        $licensePlate = $vehicle->license_plate;
+        return redirect()->route('vehicles.index')->with('message', "Sėkmingai atnaujinote automobilio <strong>$licensePlate</strong> informaciją!");
     }
 
-    // Remove the specified vehicle from storage
     public function destroy(Vehicle $vehicle)
     {
         $vehicle->delete();
-        return redirect()->route('vehicles.index')->with('success', 'Vehicle deleted successfully.');
+        $licensePlate = $vehicle->license_plate;
+        return redirect()->route('vehicles.index')->with('message', "Sėkmingai ištrynėte automobilio <strong>$licensePlate</strong> informaciją!");
     }
 
     public function getTotalVehiclesCount()
@@ -116,21 +116,18 @@ class VehicleController extends Controller
         return Vehicle::count();
     }
 
-    // Function to get the count of vehicles added in the last 24 hours
     public function getLast24HoursCount()
     {
         $date = Carbon::now()->subDay();
         return Vehicle::where('created_at', '>=', $date)->count();
     }
 
-    // Function to get the count of vehicles added in the last 7 days
     public function getLast7DaysCount()
     {
         $date = Carbon::now()->subDays(7);
         return Vehicle::where('created_at', '>=', $date)->count();
     }
 
-    // Function to get the count of vehicles added in the last 31 days
     public function getLast31DaysCount()
     {
         $date = Carbon::now()->subDays(31);

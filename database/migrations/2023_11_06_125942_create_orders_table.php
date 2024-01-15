@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('date');
             $table->foreignId('client_id')->constrained()->onDelete('cascade');
             $table->foreignId('vehicle_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Add user_id column
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->integer('vehicle_mileage')->nullable();
             $table->decimal('total_ex_vat', 10, 2);
             $table->decimal('vat', 10, 2);

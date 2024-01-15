@@ -1,20 +1,5 @@
 @extends('components/layout')
 @section('content')
-{{--Užsakovas : Vardas apvardė, Adresas, Asm.k /įm. kod. Tel.NR--}}
-
-{{--Užsakymo NR--}}
-{{--Data:--}}
-{{--Kliento nr.--}}
-
-{{--Automobilis:--}}
-{{--Valst. nr.--}}
-{{--Markė/modėlis--}}
-{{--Identikavimo NR.--}}
-{{--Pirma registracija--}}
-{{--Rida, km.--}}
-{{--Ypatingos užsakymo sąlygos:--}}
-
-{{--PREKĖS.--}}
         <body class="h-full ">
         <div class="container px-6 mx-auto">
             <h4
@@ -38,7 +23,6 @@
                     </select>
                 </label>
 
-                <!-- Vehicle Selection -->
                 <label for="vehicle_id" class="mb-4 block text-sm" >
                     <span class="text-gray-700 dark:text-gray-400">Automobilis:</span>
                     <select
@@ -151,7 +135,7 @@
                             </tr>
                             </thead>
                             <tbody id="order-items" class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                            <!-- Dynamic rows will be added here -->
+
                             </tbody>
                         </table>
                     </div>
@@ -173,10 +157,10 @@
                 <h4
                     class="mb-2 mt-8 text-lg font-semibold text-gray-600 dark:text-gray-300">Nuotraukų įkėlimas
                 </h4>
-                <!-- File Input Field -->
+
                 <input type="file" name="images[]" id="imageUpload" class="text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray" multiple>
 
-                <!-- Container for Image Previews -->
+
                 <div class="flex" id="imagePreviewContainer"></div>
 
                 <br>
@@ -228,14 +212,14 @@
     });
 
     flatpickr("#estimated_end", {
-        enableTime: true, // Enable time picker
-        dateFormat: "Y-m-d H:i", // Date format including hours and minutes
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
         locale: "lt",
     });
 
     flatpickr("#estimated_start", {
-        enableTime: true, // Enable time picker
-        dateFormat: "Y-m-d H:i", // Date format including hours and minutes
+        enableTime: true,
+        dateFormat: "Y-m-d H:i",
         locale: "lt",
     });
 
@@ -243,30 +227,25 @@
 
     document.getElementById('imageUpload').addEventListener('change', function(event) {
         var imagePreviewContainer = document.getElementById('imagePreviewContainer');
-        imagePreviewContainer.innerHTML = ''; // Clear existing previews
+        imagePreviewContainer.innerHTML = '';
 
-        var files = event.target.files; // Get the selected files
+        var files = event.target.files;
 
-        // Loop through the FileList and render image files as thumbnails.
         for (var i = 0, f; f = files[i]; i++) {
-            // Only process image files.
+
             if (!f.type.match('image.*')) {
                 continue;
             }
-
             var reader = new FileReader();
 
-            // Closure to capture the file information and render thumbnail.
             reader.onload = (function(theFile) {
                 return function(e) {
-                    // Render thumbnail.
                     var span = document.createElement('span');
                     span.innerHTML = '<img src="' + e.target.result + '" class="mt-2 w-56 md:h-auto object-cover" />';
                     imagePreviewContainer.appendChild(span);
                 };
             })(f);
 
-            // Read in the image file as a data URL.
             reader.readAsDataURL(f);
         }
     });

@@ -27,13 +27,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    <!-- Include jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- Include Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2/dist/css/select2.min.css" rel="stylesheet" />
 
-    <!-- Include Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2/dist/js/select2.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -46,7 +43,6 @@
 <body :class="{ 'overflow-hidden': isSideMenuOpen }">
 @yield('body')
 
-<!-- Import app.js -->
 <script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>

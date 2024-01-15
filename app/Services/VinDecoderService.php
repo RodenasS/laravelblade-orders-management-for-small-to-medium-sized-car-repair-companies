@@ -9,26 +9,22 @@ class VinDecoderService
     protected $baseUrl;
     protected $apiKey;
     protected $httpClient;
-
     public function __construct(Http $httpClient)
     {
         $this->httpClient = $httpClient;
         $this->baseUrl = env('VIN_DECODER_BASE_URL');
         $this->apiKey = env('VIN_DECODER_API_KEY');
     }
-
     public function decodeVin($vin)
     {
-        $url = "{$this->baseUrl}{$vin}?apikey={$this->apiKey}";
         try {
             $response = $this->sendRequest("vin/$vin");
             return $response;
         } catch (\Exception $e) {
             \Log::error("Error in decodeVin: " . $e->getMessage());
-            return null; // or handle the error as appropriate
+            return null;
         }
     }
-
     private function sendRequest(string $endpoint, string $method = 'get', array $data = []): array
     {
         try {
@@ -44,7 +40,6 @@ class VinDecoderService
                     'result' => $response->json(),
                 ];
             }
-
             return [
                 'success' => false,
                 'result' => $response->json(),
@@ -56,7 +51,6 @@ class VinDecoderService
             ];
         }
     }
-
     private function constructUrl(string $endpoint): string
     {
         return rtrim($this->baseUrl, '/') . '/' . ltrim($endpoint, '/');

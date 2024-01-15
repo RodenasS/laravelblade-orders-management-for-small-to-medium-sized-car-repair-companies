@@ -123,7 +123,7 @@
             });
 
             function displayResults(data) {
-                // Function to update text based on label
+
                 const updateTextByLabel = (label, text) => {
                     const elements = document.querySelectorAll(".container .mb-4");
                     elements.forEach((element) => {
@@ -133,13 +133,13 @@
                     });
                 };
 
-                // Update general specifications
+
                 updateTextByLabel("Markė, modelis:", `${data.make.name} ${data.model.name}`);
                 updateTextByLabel("Varomieji ratai:", data.drivenWheels);
                 updateTextByLabel("Kebulo tipas:", data.categories.vehicleStyle);
                 updateTextByLabel("Durų skaičius:", data.numOfDoors);
 
-                // Update engine specifications
+
                 updateTextByLabel("Variklio kodas:", data.engine.code);
                 updateTextByLabel("Kuro tipas:", data.engine.type);
                 updateTextByLabel("Variklio tūris (cm3):", data.engine.displacement.toString());
@@ -150,7 +150,7 @@
                 updateTextByLabel("Kompresoriaus tipas:", data.engine.compressorType);
                 updateTextByLabel("Variklio kompresija cilindre:", data.engine.compressionRatio.toString());
 
-                // Update transmission specifications
+
                 updateTextByLabel("Pavadinimas:", data.transmission.name);
                 updateTextByLabel("ID kodas:", data.transmission.id);
                 updateTextByLabel("Tipas:", data.transmission.transmissionType);

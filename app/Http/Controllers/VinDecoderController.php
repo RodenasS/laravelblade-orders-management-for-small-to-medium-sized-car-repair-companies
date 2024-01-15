@@ -6,10 +6,12 @@ use App\Services\VinDecoderService;
 
 class VinDecoderController extends Controller
 {
+
     protected $vinDecoderService;
 
     public function __construct(VinDecoderService $vinDecoderService)
     {
+        $this->middleware('auth');
         $this->vinDecoderService = $vinDecoderService;
     }
 

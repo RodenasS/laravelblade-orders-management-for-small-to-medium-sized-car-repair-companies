@@ -126,7 +126,7 @@
                         class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-700">Atšauktas</span>
                 @endif
             </div>
-        @if($order->sms_notifications)
+            @if($order->sms_notifications)
                 <p class="text-red-600">SMS pranešimai yra įjungti ir klientui bus siunčiami kaskart atnaujinus užsakymo būseną!</p>
             @endif
             @if($order->email_notifications)
@@ -205,7 +205,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Function to toggle image size
+
             function toggleImageSize(img) {
                 img.classList.toggle("w-56");
                 img.classList.toggle("w-full");
@@ -213,7 +213,6 @@
                 img.classList.toggle("h-screen");
             }
 
-            // Event listener for image click
             var images = document.querySelectorAll('.image-item');
             images.forEach(function (img) {
                 img.addEventListener('click', function () {
@@ -221,7 +220,6 @@
                 });
             });
 
-            // Function to download the image
             function downloadImage(url) {
                 var a = document.createElement('a');
                 a.href = url;
@@ -231,11 +229,10 @@
                 document.body.removeChild(a);
             }
 
-            // Event listener for download button click
             var downloadButtons = document.querySelectorAll('.download-btn');
             downloadButtons.forEach(function (btn) {
                 btn.addEventListener('click', function (e) {
-                    e.stopPropagation(); // Prevents the image toggle when clicking the download button
+                    e.stopPropagation();
                     downloadImage(this.getAttribute('data-url'));
                 });
             });

@@ -26,26 +26,16 @@ use Illuminate\Support\Facades\View;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-// Common resource routes:
-// index - show all listings
-// show - show single listing
-// create - show form to create new listing
-// store - store new listing
-// edit - show form to edit listing
-// update - update listing
-// destroy - destroy listing
+
 
 $companyInformation = CompanyInformation::first();
 $companyName = $companyInformation->name;
 
-// Share the company name with all views
 View::share('companyName', $companyName);
 
 // Sidebar
 Route::get('/company-information', [CompanyInformationController::class, 'show'])->name('company-information');
-Route::delete('/company_information/{companyInformation}/delete-logo', [CompanyInformationController::class, 'deleteLogo'])->name('company_information.delete_logo');
-
-Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('auth');;
 Route::get('/calendar-data', [DashboardController::class, 'calendarData'])->name('calendar.data');
 Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics');
 Route::get('/adminpanel', [AdminpanelController::class, 'index'])->name('adminpanel');
@@ -63,24 +53,21 @@ Route::get('/user-profile-picture', [UserController::class, 'getUserProfilePictu
 Route::post('/forgot-password', [UserController::class, 'resetPassword'])->name('users.resetPassword');
 Route::get('/forgot-password', [UserController::class, 'showForgotPasswordForm'])->name('password.reset');
 
-
-
 // Edit user's own profile
 Route::get('/profile/edit', [UserController::class, 'editOwnProfile'])->name('profile.edit');
 
-// Password reset routes
+// Auth routes
 Route::get('password/reset', [CustomResetPasswordController::class, 'showResetForm'])->name('password.request');
 Route::post('password/email', [CustomResetPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::post('password/reset', [CustomResetPasswordController::class, 'reset'])->name('password.update');
-
-
-
 Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 Route::get('/login', [UserController::class, 'login'])->name('login')->middleware('guest');
 Route::post('/users/authenticate', [UserController::class, 'authenticate']);
 
+// CompanyInformation ROUTES
 Route::get('company_information/{companyInformation}/edit', [CompanyInformationController::class, 'edit'])->name('company_information.edit');
 Route::put('/company_information/{companyInformation}', [CompanyInformationController::class, 'update']);
+Route::delete('/company_information/{companyInformation}/delete-logo', [CompanyInformationController::class, 'deleteLogo'])->name('company_information.delete_logo');
 // CLIENT ROUTES
 
 Route::get('/clients', [ClientController::class, 'index'])->name('clients.index');
@@ -111,8 +98,10 @@ Route::get('/orders/{order}/edit', [OrderController::class, 'edit'])->name('orde
 Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
 Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
 Route::post('/generate-pdf/{order}', [OrderController::class, 'generatePDF'])->name('generatePDF');
+Route::get('/generate-pdf/{order}', [OrderController::class, 'generatePDF'])->name('generatePDF');
 
+// VIN Routes
 Route::get('/vin-decoder', [VinDecoderController::class, 'show']);
 Route::get('/decode/{vin}', [VinDecoderController::class, 'decode']);
-
+// Search route
 Route::get('/search', [SearchController::class, 'search'])->name('search');

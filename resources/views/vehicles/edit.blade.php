@@ -52,13 +52,11 @@
                     <p class="text-red-500 text-xs mt-1">{{$message}}</p>
                     @enderror
 
-                    <!-- Include Flatpickr JavaScript (if not already included in your project) -->
                     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-                    <!-- Initialize Flatpickr on the input field -->
                     <script>
                         flatpickr("#first_registration", {
-                            dateFormat: "Y-m-d", // Adjust the date format as needed
+                            dateFormat: "Y-m-d",
                         });
                     </script>
 

@@ -36,7 +36,7 @@ class Order extends Model
 
         static::created(function ($order) {
             $order->order_number = 'U' . str_pad($order->id, 6, '0', STR_PAD_LEFT);
-            $order->save(); // Save the order again with the order_number
+            $order->save();
         });
     }
 
@@ -72,5 +72,9 @@ class Order extends Model
     public function images()
     {
         return $this->hasMany(OrderImage::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

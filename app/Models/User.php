@@ -46,14 +46,13 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // Relationship with Listings
     public function orders() {
         return $this->hasMany(Order::class, 'user_id');
     }
 
     public function isAdmin()
     {
-        return $this->role === 'admin'; // Assuming you have a 'role' column
+        return $this->role === 'admin' ?? false;
     }
 
 }

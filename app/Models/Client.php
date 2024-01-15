@@ -29,7 +29,6 @@ class Client extends Model
         return $this->hasMany(Vehicle::class);
     }
 
-    // Define the relationship to Order
     public function orders() {
         return $this->hasMany(Order::class);
     }

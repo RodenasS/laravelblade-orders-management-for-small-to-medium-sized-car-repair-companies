@@ -19,16 +19,15 @@ class OrderFactory extends Factory
 
         $estimated_end = $this->faker->dateTimeBetween($estimated_start, $estimated_start->format('Y-m-d') . ' +2 days');
 
-        $user = User::factory()->create();
         return [
-            'order_number' => 'U' . time() . $this->faker->unique()->randomNumber(3), // Using time() to ensure uniqueness
+            'order_number' => 'U' . time() . $this->faker->unique()->randomNumber(3),
             'date' => $this->faker->date(),
             'status' => $this->faker->randomElement(['vykdomas', 'įvykdytas', 'atšauktas']),
             'estimated_start' => $estimated_start,
             'estimated_end' => $estimated_end,
             'client_id' => \App\Models\Client::factory(),
             'vehicle_id' => \App\Models\Vehicle::factory(),
-            'user_id' => $user->id, // Use the created user's ID
+            'user_id' => User::factory(),
             'vehicle_mileage' => $this->faker->numberBetween(1000, 200000),
             'total_ex_vat' => $this->faker->randomFloat(2, 100, 10000),
             'vat' => $this->faker->randomFloat(2, 5, 25),

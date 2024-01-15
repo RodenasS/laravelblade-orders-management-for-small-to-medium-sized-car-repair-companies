@@ -11,11 +11,11 @@ return new class extends Migration
     {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('client_id'); // Make sure this is unsignedBigInteger
+            $table->unsignedBigInteger('client_id');
             $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
             $table->string('brand');
             $table->string('model');
-            $table->integer('mileage');
+            $table->integer('mileage')->nullable();
             $table->date('first_registration');
             $table->string('license_plate')->unique();
             $table->string('vin')->unique();

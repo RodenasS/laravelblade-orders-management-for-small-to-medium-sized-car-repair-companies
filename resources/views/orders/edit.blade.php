@@ -44,8 +44,8 @@
             @enderror
 
             <label for="estimated_end" class="mb-4 block text-sm">
-                <span class="text-gray-700 dark:text-gray-400">Numanoma darbų pradžia:</span>
-                <input type="text" id="estimated_start" name="estimated_start" value="{{ $order->estimated_end }}"
+                <span class="text-gray-700 dark:text-gray-400">Numanoma darbų pabaiga:</span>
+                <input type="text" id="estimated_end" name="estimated_end" value="{{ $order->estimated_end }}"
                        class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"/>
             </label>
             @error('estimated_end')
@@ -200,12 +200,10 @@
             @enderror
 
             <h4 class="mb-2 mt-8 text-lg font-semibold text-gray-600 dark:text-gray-300">Nuotraukų įkėlimas</h4>
-            <!-- File Input Field -->
             <input type="file" name="images[]" id="imageUpload"
                    class="text-sm dark:text-gray-300 dark:border-gray-600 dark:bg-gray-700 form-textarea focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:focus:shadow-outline-gray"
                    multiple>
 
-            <!-- Container for Existing Image Previews -->
             <input type="hidden" name="removedImageIds" id="removedImageIds" value="">
             <div class="flex" id="imagePreviewContainer">
                 @foreach($order->images as $image)
@@ -237,7 +235,7 @@
 
         document.getElementById('add-item').addEventListener('click', function () {
             var container = document.getElementById('order-items');
-            var itemIndex = container.querySelectorAll('tr').length; // Calculate the current index
+            var itemIndex = container.querySelectorAll('tr').length;
 
             var newItem = document.createElement('tr');
             newItem.classList.add('text-gray-700', 'dark:text-gray-400', 'border-hidden');
@@ -309,33 +307,28 @@
                 removedImageIds.value = imageId;
             }
         }
-
         document.getElementById('imageUpload').addEventListener('change', function (event) {
             var imagePreviewContainer = document.getElementById('imagePreviewContainer');
-            // Existing previews are kept, new uploads are appended
 
-            var files = event.target.files; // Get the selected files
+            var files = event.target.files;
 
-            // Loop through the FileList and render image files as thumbnails.
             for (var i = 0, f; f = files[i]; i++) {
-                // Only process image files.
+
                 if (!f.type.match('image.*')) {
                     continue;
                 }
 
                 var reader = new FileReader();
 
-                // Closure to capture the file information and render thumbnail.
                 reader.onload = (function (theFile) {
                     return function (e) {
-                        // Render thumbnail.
+
                         var span = document.createElement('span');
                         span.innerHTML = '<img src="' + e.target.result + '" class="mt-2 w-56 md:h-auto object-cover" />';
                         imagePreviewContainer.appendChild(span);
                     };
                 })(f);
 
-                // Read in the image file as a data URL.
                 reader.readAsDataURL(f);
             }
         });

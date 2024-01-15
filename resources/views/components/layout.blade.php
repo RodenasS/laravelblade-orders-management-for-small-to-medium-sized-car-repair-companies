@@ -6,8 +6,7 @@
     >
         <!-- Desktop sidebar -->
         <aside
-            class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0"
-            style="border-right: 2px solid #D1D5DB;"
+            class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0 aside-sidebar"
         >
             <div class="py-4 text-gray-500 dark:text-gray-400 ">
                 <a class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200"
@@ -348,6 +347,25 @@
         <div class="w-full h-full flex flex-col flex-1">
             @include('components/header')
             <main class="w-full min-h-screen h-full pb-16 overflow-y-auto">
+
+                @if(session('message'))
+                        <div id="flash-card" class="flex items-center justify-between p-1 mb-8 text-sm font-semibold shadow-xl flex text-white opacity-0 transition-opacity duration-300" style="background: linear-gradient(to bottom right, #6EE7B7, #48BB78);">
+                            <div class="flex items-center">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    class="h-8 w-8 mr-2">
+                                    <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/>
+                                </svg>
+                                <div class="text-left">
+                                    <h1 class="font-semibold">Sėkmingai pavyko!</h1>
+                                    <p>{!! session('message') !!}</p>
+                                </div>
+                            </div>
+                        </div>
+                @endif
+
                 @yield('content')
             </main>
         </div>
